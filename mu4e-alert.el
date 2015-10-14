@@ -30,6 +30,7 @@
 
 (require 'subr-x)
 (require 'time)
+(require 'advice)
 
 ;; Customizations
 
@@ -87,7 +88,7 @@ CALLBACK is called with one argument the number of unread emails"
 
 
 
-;; mode-line indicator for unread emails
+;; Mode-line indicator for unread emails
 
 (defvar mu4e-alert-mode-line nil "The mode-line indicator to display the count of unread emails.")
 
@@ -155,25 +156,37 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 
 ;; Tying all the above together
 
+(defadvice mu4e-mark-execute-all (after mu4e-alert-update-mail-count-modeline disable)
+  "Advice `mu4e-mark-execute-all' to update mode-line after execution."
+  (mu4e-alert-update-mail-count-modeline))
+
 ;;;###autoload
 (defun mu4e-alert-enable-mode-line-display ()
+  "Enable display of unread emails in mode-line."
   (interactive)
   (add-to-list 'global-mode-string '(:eval mu4e-alert-mode-line) t)
   (add-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
   (add-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
+  (ad-enable-advice #'mu4e-mark-execute-all 'after 'mu4e-alert-update-mail-count-modeline)
+  (ad-activate #'mu4e-mark-execute-all)
   (mu4e-alert-update-mail-count-modeline))
 
 (defun mu4e-alert-disable-mode-line-display ()
+  "Disable display of unread emails in mode-line."
   (interactive)
   (setq global-mode-string (delete '(:eval mu4e-alert-mode-line) global-mode-string))
   (remove-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
-  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline))
+  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
+  (ad-disable-advice #'mu4e-mark-execute-all 'after 'mu4e-alert-update-mail-count-modeline)
+  (ad-activate #'mu4e-mark-execute-all))
 
 (defun mu4e-alert-enable-notifications ()
+  "Enable desktop notifications for unread emails."
   (interactive)
   (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async))
 
 (defun mu4e-alert-disable-notifications ()
+  "Disable desktop notifications for unread emails."
   (interactive)
   (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async))
 
