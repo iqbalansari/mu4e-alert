@@ -155,3 +155,27 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 
 ;; Tying all the above together
 
+;;;###autoload
+(defun mu4e-alert-enable-mode-line-display ()
+  (interactive)
+  (add-to-list 'global-mode-string '(:eval mu4e-alert-mode-line) t)
+  (add-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
+  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
+  (mu4e-alert-update-mail-count-modeline))
+
+(defun mu4e-alert-disable-mode-line-display ()
+  (interactive)
+  (setq global-mode-string (delete '(:eval mu4e-alert-mode-line) global-mode-string))
+  (remove-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
+  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline))
+
+(defun mu4e-alert-enable-notifications ()
+  (interactive)
+  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async))
+
+(defun mu4e-alert-disable-notifications ()
+  (interactive)
+  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async))
+
+(provide 'mu4e-alert)
+;;; mu4e-alert.el ends here
