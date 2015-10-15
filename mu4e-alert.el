@@ -152,7 +152,8 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
   (when (not (zerop mail-count))
     (alert (funcall 'mu4e-alert-default-notification-formatter
                     mail-count)
-           :title "mu4e")))
+           :title "mu4e"
+           :category "mu4e-alert")))
 
 (defun mu4e-alert-notify-async ()
   "Send a desktop notification about currently unread email."
