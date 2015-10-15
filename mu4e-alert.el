@@ -69,6 +69,11 @@ unread emails and should return the string to be used for the notification"
   :type 'function
   :group 'mu4e-alert)
 
+(defcustom mu4e-alert-title "mu4e - Unread emails"
+  "The title to use for desktop notifications."
+  :type 'string
+  :group 'mu4e-alert)
+
 ;;;###autoload
 (defun mu4e-alert-set-default-style (value)
   "Set the default style for unread email notifications.
@@ -172,7 +177,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
   (when (not (zerop mail-count))
     (alert (funcall 'mu4e-alert-default-notification-formatter
                     mail-count)
-           :title "mu4e"
+           :title mu4e-alert-title
            :category "mu4e-alert")))
 
 (defun mu4e-alert-notify-async ()
