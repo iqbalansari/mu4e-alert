@@ -32,7 +32,7 @@
 (require 'mu4e)
 (require 'alert)
 
-(require 'subr-x)
+(require 'subr-x nil t)
 (require 'time)
 (require 'advice)
 
@@ -95,6 +95,32 @@ use the function `mu4e-alert-set-default-style'"
   :type (alert-styles-radio-type 'radio)
   :set (lambda (_ value) (mu4e-alert-set-default-style value))
   :group 'mu4e-alert)
+
+
+
+;; Compatibility functions
+;; These functions were introduced in 24.4 and are not available in older version
+
+(unless (featurep 'subr-x)
+  (defsubst string-join (strings &optional separator)
+    "Join all STRINGS using SEPARATOR."
+    (mapconcat 'identity strings separator))
+
+  (defsubst string-trim-left (string)
+    "Remove leading whitespace from STRING."
+    (if (string-match "\\`[ \t\n\r]+" string)
+        (replace-match "" t t string)
+      string))
+
+  (defsubst string-trim-right (string)
+    "Remove trailing whitespace from STRING."
+    (if (string-match "[ \t\n\r]+\\'" string)
+        (replace-match "" t t string)
+      string))
+
+  (defsubst string-trim (string)
+    "Remove leading and trailing whitespace from STRING."
+    (string-trim-left (string-trim-right string))))
 
 
 
