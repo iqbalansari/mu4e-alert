@@ -69,7 +69,7 @@ unread emails and should return the string to be used for the notification"
   :type 'function
   :group 'mu4e-alert)
 
-(defcustom mu4e-alert-title "mu4e - Unread emails"
+(defcustom mu4e-alert-title "mu4e"
   "The title to use for desktop notifications."
   :type 'string
   :group 'mu4e-alert)
