@@ -1,0 +1,72 @@
+* mu4e alert
+** What is this?
+   mu4e-alert is an Emacs extension providing desktop notifications for [[https://github.com/djcb/mu][mu4e]],
+   additionally it can display the number of unread emails in the mode-line.
+
+** Requirements
+   This requires a working mu/mu4e setup.
+
+** Usage
+   To enable desktop notifications manually, use the command
+   ~mu4e-alert-enable-notifications~. To enable notification automatically on
+   Emacs startup add something like the following to you ~init~ file
+
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+   #+END_SRC
+
+   You can disable notifications using the command ~mu4e-alert-disable-notifications~
+
+   You can additionally enable display of the unread email count in the
+   mode-line using the command ~mu4e-alert-enable-mode-line-display~ or
+   adding something like the following to your ~init~ file
+
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+   #+END_SRC
+
+   After enabling mode-line display the unread emails can be viewed by clicking
+   the mode-line indicator.
+
+   Use the command ~mu4e-alert-disable-mode-line-display~ to disable mode-line
+   indication of unread emails
+
+** Customizations
+   ~mu4e-alert~ should work with default options, nevertheless it offers the
+   following customizations. Please see the ~mu4e-alert.el~ file or do =M-x=
+   customize-group =RET= mu4e-alert =RET= to for documentation of customizable
+   options.
+
+*** General options
+    The query used to find unread (read 'interesting') emails can be customized using
+    the variable ~mu4e-alert-interesting-mail-query~
+
+*** Customizing the desktop notifications
+    ~mu4e-alert~ allows you to customize the desktop notifications by setting
+    the following values
+
+    |-----------------------------------+-------------------------------------------------|
+    | Variable                          | Aspect customized                               |
+    |-----------------------------------+-------------------------------------------------|
+    | mu4e-alert-title                  | Title used for notifications                    |
+    | mu4e-alert-notification-formatter | Formatting the message body of the notification |
+    | mu4e-alert-set-default-style      | Style used for the desktop notifications        |
+    |-----------------------------------+-------------------------------------------------|
+
+*** Customizing the mode-line display
+    The mode-line indicator for unread emails can be customized by setting the
+    value of the variable ~mu4e-alert-modeline-formatter~
+
+** Advanced customizations
+   ~mu4e-alert~ uses the excellent [[https://github.com/jwiegley/alert][alert]] library for desktop notifications, more
+   fine-grained customizations to the notifications can be done by using the
+   ~alert~'s API.
+
+   As an example the following customization will color the fringe (along with
+   the usual desktop notification) if there unread messages and user is one of
+   ~mu4e-main-view~, ~mu4e-headers-view~ or viewing an email in mu4e.
+
+   #+BEGIN_SRC emacs-lisp
+     (mu4e-alert-enable-notifications)
+     (alert-add-rule :category "mu4e-alert" :style 'fringe :predicate (lambda (_) (string-match-p "^mu4e-" (symbol-name major-mode))) :continue t)
+   #+END_SRC
