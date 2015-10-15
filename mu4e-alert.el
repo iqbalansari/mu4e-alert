@@ -69,6 +69,7 @@ unread emails and should return the string to be used for the notification"
   :type 'function
   :group 'mu4e-alert)
 
+;;;###autoload
 (defun mu4e-alert-set-default-style (value)
   "Set the default style for unread email notifications.
 
@@ -206,6 +207,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
   (ad-disable-advice #'mu4e-mark-execute-all 'after 'mu4e-alert-update-mail-count-modeline)
   (ad-activate #'mu4e-mark-execute-all))
 
+;;;###autoload
 (defun mu4e-alert-enable-notifications ()
   "Enable desktop notifications for unread emails."
   (interactive)
