@@ -189,7 +189,8 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 (defun mu4e-alert-enable-notifications ()
   "Enable desktop notifications for unread emails."
   (interactive)
-  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async))
+  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async)
+  (mu4e-alert-notify-async))
 
 (defun mu4e-alert-disable-notifications ()
   "Disable desktop notifications for unread emails."
