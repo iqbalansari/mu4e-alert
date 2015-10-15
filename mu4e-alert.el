@@ -126,9 +126,17 @@ use the function `mu4e-alert-set-default-style'"
 
 ;; Basic functions
 
+(defun mu4e-alert--sanity-check ()
+  "Sanity check run before attempting to fetch unread emails."
+  (unless (and (bound-and-true-p mu4e-mu-binary)
+               (stringp mu4e-mu-binary)
+               (file-executable-p mu4e-mu-binary))
+    (user-error "Please set `mu4e-mu-binary' to the full path to the mu binary, before attempting to enable `mu4e-alert'")))
+
 (defun mu4e-alert--get-mu-unread-mail-count (callback)
   "Get the count of unread emails asynchronously.
 CALLBACK is called with one argument the number of unread emails"
+  (mu4e-alert--sanity-check)
   (let* ((mail-count-command (append (mapcar #'shell-quote-argument
                                              (append (list mu4e-mu-binary
                                                            "find"
