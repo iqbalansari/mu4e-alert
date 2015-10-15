@@ -18,10 +18,14 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+
 ;;; Commentary:
 
 ;; This package provides desktop notifications for mu4e, additionally it can
 ;; display the number of unread emails in the modeline
+
+
 
 ;;; Code:
 
@@ -31,6 +35,8 @@
 (require 'subr-x)
 (require 'time)
 (require 'advice)
+
+
 
 ;; Customizations
 
