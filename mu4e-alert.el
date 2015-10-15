@@ -69,6 +69,25 @@ unread emails and should return the string to be used for the notification"
   :type 'function
   :group 'mu4e-alert)
 
+(defun mu4e-alert-set-default-style (value)
+  "Set the default style for unread email notifications.
+
+VALUE is the value to be used as the default style."
+  (let ((notification-style (if (consp value)
+                                (eval value)
+                              value)))
+    (alert-add-rule :category "mu4e-alert" :style notification-style)
+    (setq-default mu4e-alert-style notification-style)))
+
+(defcustom mu4e-alert-style 'notifications
+  "The default style to use for notifying the user about unread emails.
+
+This should be one of `alert-styles'.  To customize this value from Lisp
+use the function `mu4e-alert-set-default-style'"
+  :type (alert-styles-radio-type 'radio)
+  :set (lambda (_ value) (mu4e-alert-set-default-style value))
+  :group 'mu4e-alert)
+
 
 
 ;; Basic functions
