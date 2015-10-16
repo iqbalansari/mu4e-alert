@@ -1,4 +1,4 @@
-;;; mu4e-alert.el --- Desktop notification and mode-line display for mu4e  -*- lexical-binding: t; -*-
+;;; mu4e-alert.el --- Desktop notification for mu4e  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015  Iqbal Ansari
 
@@ -6,7 +6,7 @@
 ;; URL: https://github.com/iqbalansari/mu4e-alert
 ;; Keywords: mail, convenience
 ;; Version: 0.1
-;; Package-Requires: ((alert "1.2"))
+;; Package-Requires: ((alert "1.2") (emacs "24.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
