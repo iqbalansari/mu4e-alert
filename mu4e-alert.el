@@ -6,7 +6,7 @@
 ;; URL: https://github.com/iqbalansari/mu4e-alert
 ;; Keywords: mail, convenience
 ;; Version: 0.1
-;; Package-Requires: ((alert "1.2") (emacs "24.1"))
+;; Package-Requires: ((alert "1.2") (s "1.10.0") (emacs "24.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@
 
 (require 'mu4e)
 (require 'alert)
+(require 's)
 
-(require 'subr-x nil t)
 (require 'time)
 (require 'advice)
 
@@ -101,32 +101,6 @@ use the function `mu4e-alert-set-default-style'"
 
 
 
-;; Compatibility functions
-;; These functions were introduced in 24.4 and are not available in older version
-
-(unless (featurep 'subr-x)
-  (defsubst string-join (strings &optional separator)
-    "Join all STRINGS using SEPARATOR."
-    (mapconcat 'identity strings separator))
-
-  (defsubst string-trim-left (string)
-    "Remove leading whitespace from STRING."
-    (if (string-match "\\`[ \t\n\r]+" string)
-        (replace-match "" t t string)
-      string))
-
-  (defsubst string-trim-right (string)
-    "Remove trailing whitespace from STRING."
-    (if (string-match "[ \t\n\r]+\\'" string)
-        (replace-match "" t t string)
-      string))
-
-  (defsubst string-trim (string)
-    "Remove leading and trailing whitespace from STRING."
-    (string-trim-left (string-trim-right string))))
-
-
-
 ;; Basic functions
 
 (defun mu4e-alert--sanity-check ()
@@ -146,9 +120,9 @@ CALLBACK is called with one argument the number of unread emails"
                                                            "--nocolor")
                                                      (split-string mu4e-alert-interesting-mail-query)))
                                      '("2>/dev/null | wc -l")))
-         (mail-count-command-string (string-join mail-count-command " "))
+         (mail-count-command-string (s-join " " mail-count-command))
          (process-filter (lambda (_ output)
-                           (funcall callback (string-to-number (string-trim output))))))
+                           (funcall callback (string-to-number (s-trim output))))))
     (set-process-filter (start-process "mu4e-unread-count"
                                        nil
                                        (getenv "SHELL")
