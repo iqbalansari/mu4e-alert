@@ -85,15 +85,20 @@ VALUE is the value to be used as the default style."
   (let ((notification-style (if (consp value)
                                 (eval value)
                               value)))
+    (unless (assoc value alert-styles)
+      (user-error "[mu4e-alert] Do not know how to use `%s' style, please one of %s"
+                  value
+                  (mapcar #'car alert-styles)))
     (alert-add-rule :category "mu4e-alert" :style notification-style)
     (setq-default mu4e-alert-style notification-style)))
 
 (defcustom mu4e-alert-style alert-default-style
   "The default style to use for notifying the user about unread emails.
 
-This should be one of `alert-styles'.  To customize this value from Lisp
-use the function `mu4e-alert-set-default-style', if you want more fine
-grained customizations you can use alert's API.
+This should be one of `alert-styles'.  Setting this directly from Lisp will not
+work, to customize this value from Lisp use the function
+`mu4e-alert-set-default-style', if you want more fine grained customizations you
+can use alert's API and add rules for the category \"mu4e-alert\"
 
 See also https://github.com/jwiegley/alert."
   :type (alert-styles-radio-type 'radio)
