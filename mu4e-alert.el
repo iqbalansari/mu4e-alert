@@ -88,13 +88,14 @@ VALUE is the value to be used as the default style."
     (alert-add-rule :category "mu4e-alert" :style notification-style)
     (setq-default mu4e-alert-style notification-style)))
 
-(defcustom mu4e-alert-style (cond ((featurep 'notifications) 'notifications)
-                                  ((bound-and-true-p alert-libnotify-command) 'libnotify)
-                                  (t 'message))
+(defcustom mu4e-alert-style alert-default-style
   "The default style to use for notifying the user about unread emails.
 
 This should be one of `alert-styles'.  To customize this value from Lisp
-use the function `mu4e-alert-set-default-style'"
+use the function `mu4e-alert-set-default-style', if you want more fine
+grained customizations you can use alert's API.
+
+See also https://github.com/jwiegley/alert."
   :type (alert-styles-radio-type 'radio)
   :set (lambda (_ value) (mu4e-alert-set-default-style value))
   :group 'mu4e-alert)
