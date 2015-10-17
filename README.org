@@ -12,8 +12,16 @@
    Emacs startup add something like the following to you ~init~ file
 
    #+BEGIN_SRC emacs-lisp
+     ;; Choose the style you prefer for desktop notifications
+     (mu4e-alert-set-default-style 'libnotify)
      (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
    #+END_SRC
+
+   ~mu4e-alert~ uses the value of ~alert-default-style~ as the default
+   notification style, which defaults to ~message~, if you want to use different
+   style please add a rule for category "mu4e-alert" using alert's API or use
+   the function ~mu4e-alert-set-default-style~ to customize the value of
+   ~mu4e-alert-style~.
 
    You can disable notifications using the command ~mu4e-alert-disable-notifications~
 
@@ -45,13 +53,13 @@
     ~mu4e-alert~ allows you to customize the desktop notifications by setting
     the following values
 
-    |-----------------------------------+-------------------------------------------------|
-    | Variable                          | Aspect customized                               |
-    |-----------------------------------+-------------------------------------------------|
-    | mu4e-alert-title                  | Title used for notifications                    |
-    | mu4e-alert-notification-formatter | Formatting the message body of the notification |
-    | mu4e-alert-set-default-style      | Style used for the desktop notifications        |
-    |-----------------------------------+-------------------------------------------------|
+    |-----------------------------------+-------------------------------------------------+-------------------------------------------|
+    | Variable                          | Aspect customized                               | Default                                   |
+    |-----------------------------------+-------------------------------------------------+-------------------------------------------|
+    | mu4e-alert-title                  | Title used for notifications                    | mu4e                                      |
+    | mu4e-alert-notification-formatter | Formatting the message body of the notification | mu4e-alert-default-notification-formatter |
+    | mu4e-alert-set-default-style      | Style used for the desktop notifications        | message                                   |
+    |-----------------------------------+-------------------------------------------------+-------------------------------------------|
 
 *** Customizing the mode-line display
     The mode-line indicator for unread emails can be customized by setting the
@@ -67,6 +75,7 @@
    ~mu4e-main-view~, ~mu4e-headers-view~ or viewing an email in mu4e.
 
    #+BEGIN_SRC emacs-lisp
-     (mu4e-alert-enable-notifications)
+     (mu4e-alert-set-default-style 'libnotify)
      (alert-add-rule :category "mu4e-alert" :style 'fringe :predicate (lambda (_) (string-match-p "^mu4e-" (symbol-name major-mode))) :continue t)
+     (mu4e-alert-enable-notifications)
    #+END_SRC
