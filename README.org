@@ -2,6 +2,8 @@
 
   [[http://melpa.org/#/mu4e-alert][file:http://melpa.org/packages/mu4e-alert-badge.svg]]
 
+  [[mu4e-alert in action][images/mu4e-alert-in-action.png?raw=true]]
+
 ** What is this?
    mu4e-alert is an Emacs extension providing desktop notifications for [[https://github.com/djcb/mu][mu4e]],
    additionally it can display the number of unread emails in the mode-line.
