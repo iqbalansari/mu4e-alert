@@ -1,6 +1,6 @@
 * mu4e alert
 
-  [[http://melpa.org/#/mu4e-alert][file:http://melpa.org/packages/mu4e-alert-badge.svg]]
+  [[http://melpa.org/#/mu4e-alert][file:http://melpa.org/packages/mu4e-alert-badge.svg]] [[http://stable.melpa.org/#/mu4e-alert][file:http://stable.melpa.org/packages/mu4e-alert-badge.svg]]
 
   [[https://raw.githubusercontent.com/iqbalansari/mu4e-alert/master/images/mu4e-alert-in-action.png][images/mu4e-alert-in-action.png?raw=true]]
 
@@ -14,7 +14,7 @@
 
 ** Installation
 *** ELPA
-    ~mu4e-alert~ is available on [[http://melpa.org/#/restart-emacs][MELPA]]. Please follow the instructions on
+    ~mu4e-alert~ is available on [[http://melpa.org/#/mu4e-alert][MELPA]] and [[http://stable.melpa.org/#/mu4e-alert][MELPA Stable]]. Please follow the instructions on
     MELPA [[http://melpa.org/#/getting-started][website]] to enable it, if you haven't already.
 
     You can then install ~mu4e-alert~ from the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Package-Menu.html][package menu]]. Alternatively
