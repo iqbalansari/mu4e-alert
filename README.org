@@ -100,8 +100,9 @@
    ~alert~'s API.
 
    As an example the following customization will color the fringe (along with
-   the usual desktop notification) if there unread messages and user is one of
-   ~mu4e-main-view~, ~mu4e-headers-view~ or viewing an email in mu4e.
+   the usual desktop notification) if there are unread messages and the user is
+   visiting one of ~mu4e-main-view~, ~mu4e-headers-view~ or viewing an email in
+   mu4e.
 
    #+BEGIN_SRC emacs-lisp
      (mu4e-alert-set-default-style 'libnotify)
