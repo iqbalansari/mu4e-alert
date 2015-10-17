@@ -4,7 +4,33 @@
    additionally it can display the number of unread emails in the mode-line.
 
 ** Requirements
-   This requires a working mu/mu4e setup.
+   This package requires Emacs v24.1 or above. It assumes that you have a
+   working mu/mu4e setup.
+
+** Installation
+*** ELPA
+    ~mu4e-alert~ will be available on [[http://melpa.org/#/restart-emacs][MELPA]] [[https://github.com/milkypostman/melpa/pull/3207][soon]]. Please follow the instructions on
+    MELPA [[http://melpa.org/#/getting-started][website]] to enable it, if you haven't already.
+
+    You can then install ~mu4e-alert~ from the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Package-Menu.html][package menu]]. Alternatively
+    install it by doing the following
+
+    Refresh the package index
+    #+BEGIN_QUOTE
+    M-x package-refresh-contents RET
+    #+END_QUOTE
+
+    And then install it by doing
+    #+BEGIN_QUOTE
+    M-x package-install RET mu4e-alert
+    #+END_QUOTE
+
+*** El-get
+    ~mu4e-alert~ can also be installed using ~el-get~. Assuming you have latest
+    version of el-get installing it by doing something similar to
+    #+BEGIN_QUOTE
+    M-x el-get-install RET mu4e-alert
+    #+END_QUOTE
 
 ** Usage
    To enable desktop notifications manually, use the command
