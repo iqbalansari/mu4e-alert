@@ -171,7 +171,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 This is primarily used to enable viewing unread emails by default mode-line
 formatter when user clicks on mode-line indicator"
   (interactive)
-  (mu4e-headers-search "flag:unread AND NOT flag:trashed"))
+  (mu4e-headers-search mu4e-alert-interesting-mail-query))
 
 (defun mu4e-alert-update-mail-count-modeline ()
   "Update mail count in the mode-line."
