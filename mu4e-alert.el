@@ -124,6 +124,8 @@ CALLBACK is called with one argument the number of unread emails"
                                              (append (list mu4e-mu-binary
                                                            "find"
                                                            "--nocolor")
+                                                     (when mu4e-mu-home
+                                                       (list (concat "--muhome=" mu4e-mu-home)))
                                                      (split-string mu4e-alert-interesting-mail-query)))
                                      '("2>/dev/null | wc -l")))
          (mail-count-command-string (s-join " " mail-count-command))
