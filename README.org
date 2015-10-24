@@ -128,8 +128,7 @@
 ** Getting desktop notifications
    By default the user is notified of unread messages using Emacs' ~message~
    function. To get desktop notifications you can instruct ~mu4e-alert~ to use
-   an appropriate style [provided](https://github.com/jwiegley/alert#builtin-alert-styles) by the ~alert~
-   library that works on your system.
+   an appropriate style [[https://github.com/jwiegley/alert#builtin-alert-styles][provided]] by the ~alert~ library that works on your system.
 
    The easiest way to do this is use the function
    ~mu4e-alert-set-default-style~, calling it with the style to be used for
@@ -142,21 +141,24 @@
 
 **** notifications
      This style uses ~notifications.el~ an implementation of the Desktop
-     Notifications API, which ships with Emacs.
+     Notifications API, which ships with Emacs. It requires that Emacs is
+     compiled with DBus support
 
 **** libnotify
-     This style uses the command-line program ~notify-send~ to notify the user
+     This style uses the command-line program ~notify-send~ to notify the user.
+     The program should be in ~PATH~
 
 *** Mac OSX
-    The following styles for desktop notifications, are available on Mac OSX
+    The following styles for desktop notifications, are available on Mac OSX.
+    Also see the discussion on the issue [[https://github.com/iqbalansari/mu4e-alert/issues/2][Does it works with MacOS X?]]
 
 **** growl
      This style uses the command-line program ~growlnotify~ to notify the user
-     using ~Growl~
+     using ~Growl~. The program should be in ~PATH~
 
 **** notifier
      This style uses the command-line program ~terminal-notifier~ to notify the
-     user
+     user. The program should be in ~PATH~
 
 ** Advanced customizations
    ~mu4e-alert~ uses the excellent [[https://github.com/jwiegley/alert][alert]] library for desktop notifications, more
