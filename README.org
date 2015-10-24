@@ -4,22 +4,22 @@
 
   [[https://raw.githubusercontent.com/iqbalansari/mu4e-alert/master/images/mu4e-alert-in-action.png][images/mu4e-alert-in-action.png?raw=true]]
 
-** Table of contents                                              :TOC_3_org:
- - [[mu4e alert][mu4e alert]]
-   - [[What is this?][What is this?]]
-   - [[Requirements][Requirements]]
-   - [[Installation][Installation]]
-     - [[ELPA][ELPA]]
-     - [[El-get][El-get]]
-   - [[Usage][Usage]]
-   - [[Customizations][Customizations]]
-     - [[General options][General options]]
-     - [[Customizing the desktop notifications][Customizing the desktop notifications]]
-     - [[Customizing the mode-line display][Customizing the mode-line display]]
-   - [[Getting desktop notifications][Getting desktop notifications]]
-     - [[Linux][Linux]]
-     - [[Mac OSX][Mac OSX]]
-   - [[Advanced customizations][Advanced customizations]]
+** Table of contents                                              :TOC_3_gh:
+ - [[#mu4e-alert][mu4e alert]]
+   - [[#what-is-this][What is this?]]
+   - [[#requirements][Requirements]]
+   - [[#installation][Installation]]
+     - [[#elpa][ELPA]]
+     - [[#el-get][El-get]]
+   - [[#usage][Usage]]
+   - [[#customizations][Customizations]]
+     - [[#general-options][General options]]
+     - [[#customizing-the-desktop-notifications][Customizing the desktop notifications]]
+     - [[#customizing-the-mode-line-display][Customizing the mode-line display]]
+   - [[#getting-desktop-notifications][Getting desktop notifications]]
+     - [[#linux][Linux]]
+     - [[#mac-osx][Mac OSX]]
+   - [[#advanced-customizations][Advanced customizations]]
 
 ** What is this?
    mu4e-alert is an Emacs extension providing desktop notifications for [[https://github.com/djcb/mu][mu4e]],
@@ -31,7 +31,7 @@
    user shell to support pipe (~|~) operator, this should not be a problem on
    any UNIXy system (including Mac OSX).
 
-   However it might not work on Windows unless you have something like `cygwin`
+   However it might not work on Windows unless you have something like ~cygwin~
    installed. Pull requests to improve Windows support are welcome.
 
 ** Installation
