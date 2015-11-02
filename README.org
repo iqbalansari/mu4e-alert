@@ -2,7 +2,7 @@
 
   [[http://melpa.org/#/mu4e-alert][file:http://melpa.org/packages/mu4e-alert-badge.svg]] [[http://stable.melpa.org/#/mu4e-alert][file:http://stable.melpa.org/packages/mu4e-alert-badge.svg]]
 
-  [[https://raw.githubusercontent.com/iqbalansari/mu4e-alert/master/images/mu4e-alert-in-action.png][screenshots/mu4e-alert-in-action.png?raw=true]]
+  [[https://raw.githubusercontent.com/iqbalansari/mu4e-alert/master/screenshots/mu4e-alert-in-action.png][screenshots/mu4e-alert-in-action.png?raw=true]]
 
 ** Table of contents                                              :TOC_3_gh:
  - [[#mu4e-alert][mu4e alert]]
