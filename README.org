@@ -62,7 +62,7 @@
 ** Usage
    To enable desktop notifications manually, use the command
    ~mu4e-alert-enable-notifications~. To enable notification automatically on
-   Emacs startup add something like the following to you ~init~ file
+   Emacs startup add something like the following to your ~init~ file
 
    #+BEGIN_SRC emacs-lisp
      ;; Choose the style you prefer for desktop notifications
