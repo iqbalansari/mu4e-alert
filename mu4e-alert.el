@@ -160,6 +160,12 @@ CALLBACK is called with one argument the interesting emails."
                                          mail-count-command-string)
                           (mu4e-alert--get-mail-sentinel callback))))
 
+(defun mu4e-alert--get-mu-unread-mail-count (callback)
+  "Get the count of interesting emails asynchronously.
+CALLBACK is called with one argument the number of interesting emails"
+  (mu4e-alert--get-mu-unread-mails (lambda (mails)
+                                     (funcall callback (length mails)))))
+
 
 
 ;; Mode-line indicator for unread emails
