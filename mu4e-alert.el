@@ -107,7 +107,7 @@ See also https://github.com/jwiegley/alert."
 
 
 
-;; Basic functions
+;; Core functions
 
 (defun mu4e-alert--sanity-check ()
   "Sanity check run before attempting to fetch unread emails."
@@ -116,28 +116,49 @@ See also https://github.com/jwiegley/alert."
                (file-executable-p mu4e-mu-binary))
     (user-error "Please set `mu4e-mu-binary' to the full path to the mu binary, before attempting to enable `mu4e-alert'")))
 
-(defun mu4e-alert--get-mu-unread-mail-count (callback)
-  "Get the count of unread emails asynchronously.
-CALLBACK is called with one argument the number of unread emails"
+(defun mu4e-alert--parse-mails (buffer)
+  "Parse the emails in BUFFER.
+The buffer holds the emails received from mu in sexp format"
+  (read (concat "("
+                (with-current-buffer buffer (buffer-string))
+                ")")))
+
+(defun mu4e-alert--get-mail-sentinel (callback)
+  "Create sentinel for process to get mails from mu, CALLBACK is called with the unread mails."
+  (lambda (process status)
+    (when (s-equals? (s-trim status) "finished")
+      (let ((mail-buffer (process-buffer process)))
+        (with-current-buffer mail-buffer
+          (funcall callback (mu4e-alert--parse-mails mail-buffer)))))))
+
+(defun mu4e-alert--get-mail-output-buffer ()
+  "Get buffer for storing mails received from mu."
+  (with-current-buffer (get-buffer-create " *mu4e-mails*")
+    (rename-uniquely)
+    (current-buffer)))
+
+(defun mu4e-alert--get-mu-unread-mails (callback)
+  "Get the count of interesting emails asynchronously.
+CALLBACK is called with one argument the interesting emails."
   (mu4e-alert--sanity-check)
   (let* ((mail-count-command (append (mapcar #'shell-quote-argument
                                              (append (list mu4e-mu-binary
                                                            "find"
-                                                           "--nocolor")
-                                                     (when mu4e-headers-skip-duplicates (list "-u"))
+                                                           "--nocolor"
+                                                           "-o"
+                                                           "sexp")
+                                                     (when mu4e-headers-skip-duplicates
+                                                       (list "-u"))
                                                      (when mu4e-mu-home
                                                        (list (concat "--muhome=" mu4e-mu-home)))
-                                                     (split-string mu4e-alert-interesting-mail-query)))
-                                     '("2>/dev/null | wc -l")))
-         (mail-count-command-string (s-join " " mail-count-command))
-         (process-filter (lambda (_ output)
-                           (funcall callback (string-to-number (s-trim output))))))
-    (set-process-filter (start-process "mu4e-unread-count"
-                                       nil
-                                       (getenv "SHELL")
-                                       "-c"
-                                       mail-count-command-string)
-                        process-filter)))
+                                                     (split-string mu4e-alert-interesting-mail-query)))))
+         (mail-count-command-string (s-join " " mail-count-command)))
+    (set-process-sentinel (start-process "mu4e-unread-mails"
+                                         (mu4e-alert--get-mail-output-buffer)
+                                         (getenv "SHELL")
+                                         "-c"
+                                         mail-count-command-string)
+                          (mu4e-alert--get-mail-sentinel callback))))
 
 
 
