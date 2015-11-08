@@ -105,6 +105,29 @@ See also https://github.com/jwiegley/alert."
   :set (lambda (_ value) (mu4e-alert-set-default-style value))
   :group 'mu4e-alert)
 
+(defcustom mu4e-alert-group-by :from
+  "Field to group messages to be displayed in notifications by.
+
+This should be one of :from, :to, :maildir, :priority and :flags or a function.
+If set to a function, the function should accept a single argument the list of
+messages and return a list of list of messages, where each individual list of
+messages should grouped together in one notification."
+  :type '(radio :tag "Field to group messages to be displayed in notifications"
+                (const :tag "Sender" :from)
+                (const :tag "Recipient" :to)
+                (const :tag "Maildir" :maildir)
+                (const :tag "Priority" :priority)
+                (const :tag "Flags" :flags))
+  :group 'mu4e-alert)
+
+(defcustom mu4e-alert-grouped-mail-notification-formatter
+  #'mu4e-alert-default-grouped-mail-notification-formatter
+  "The function used to get the notification for a group of mails.
+
+mu4e-alert can display the count of unread emails, as well as emails grouped by
+certain field.  This function is used to get the notification to be displayed
+for a group of emails.")
+
 
 
 ;; Core functions
