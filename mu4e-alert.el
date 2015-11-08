@@ -38,6 +38,7 @@
 
 (require 'time)
 (require 'advice)
+(require 'pcase)
 
 
 
@@ -235,6 +236,39 @@ formatter when user clicks on mode-line indicator"
 
 
 ;; Desktop notifications for unread emails
+
+(defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group)
+  (let* ((mail-count (length mail-group))
+         (first-mail (car mail-group))
+         (title-prefix (if (= mail-count 1)
+                           "You have an unread email"
+                         (format "You have %s unread emails" mail-count)))
+         (field-value (pcase mu4e-alert-group-by
+                        (`:from (or (car (plist-get first-mail :from))
+                                    (cdr (plist-get first-mail :from))))
+                        (`:to (or (car (plist-get first-mail :to))
+                                  (cdr (plist-get first-mail :to))))
+                        (`:maildir (plist-get first-mail :maildir))
+                        (`:priority (symbol-value (plist-get first-mail :maildir)))
+                        (`:flags (s-join ", " (mapcar #'symbol-value
+                                                      (plist-get first-mail :flags))))))
+         (title-suffix (format (pcase mu4e-alert-group-by
+                                 (`:from "from %s:")
+                                 (`:to "to %s:")
+                                 (`:maildir "in %s:")
+                                 (`:priority "with %s priority:")
+                                 (`:flags "with %s flags:"))
+                               field-value))
+         (title (format "%s %s\n" title-prefix title-suffix)))
+    (list :title title
+          :body (s-join "\n"
+                        (mapcar (lambda (mail)
+                                  (plist-get mail :subject))
+                                mail-group)))))
+
+
+
+;; Desktop notifications for unread email counts
 
 (defun mu4e-alert-default-notification-formatter (mail-count)
   "Default formatter used to get the string for desktop notification.
