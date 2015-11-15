@@ -121,6 +121,13 @@ messages should grouped together in one notification."
                 (const :tag "Flags" :flags))
   :group 'mu4e-alert)
 
+(defcustom mu4e-alert-mail-grouper
+  #'mu4e-alert-default-mails-grouper
+  "The function used to get arrange similar mails in to a group.
+
+It should accept a list of mails and return a list of lists, where each list is
+a group of messages that user should be notified about in one notification.")
+
 (defcustom mu4e-alert-grouped-mail-notification-formatter
   #'mu4e-alert-default-grouped-mail-notification-formatter
   "The function used to get the notification for a group of mails.
@@ -237,21 +244,37 @@ formatter when user clicks on mode-line indicator"
 
 ;; Desktop notifications for unread emails
 
+(defun mu4e-alert--get-group (mail)
+  (pcase mu4e-alert-group-by
+    (`:from (or (caar (plist-get mail :from))
+                (cdar (plist-get mail :from))))
+    (`:to (or (caar (plist-get mail :to))
+              (cdar (plist-get mail :to))))
+    (`:maildir (plist-get mail :maildir))
+    (`:priority (symbol-value (plist-get mail :maildir)))
+    (`:flags (s-join ", " (mapcar #'symbol-value
+                                  (plist-get mail :flags))))))
+
+(defun mu4e-alert-default-mails-grouper (mails)
+  "Default function to group MAILS for notification."
+  (let ((mail-hash (make-hash-table :test #'equal)))
+    (dolist (mail mails)
+      (let ((mail-group (mu4e-alert--get-group mail)))
+        (puthash mail-group
+                 (cons mail (gethash mail-group mail-hash))
+                 mail-hash)))
+    (sort (hash-table-values mail-hash) (lambda (group1 group2)
+                                          (not (time-less-p (plist-get (car group1) :date)
+                                                            (plist-get (car group2) :date)))))))
+
 (defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group)
+  "Default function to format MAIL-GROUP for notification."
   (let* ((mail-count (length mail-group))
          (first-mail (car mail-group))
          (title-prefix (if (= mail-count 1)
                            "You have an unread email"
                          (format "You have %s unread emails" mail-count)))
-         (field-value (pcase mu4e-alert-group-by
-                        (`:from (or (car (plist-get first-mail :from))
-                                    (cdr (plist-get first-mail :from))))
-                        (`:to (or (car (plist-get first-mail :to))
-                                  (cdr (plist-get first-mail :to))))
-                        (`:maildir (plist-get first-mail :maildir))
-                        (`:priority (symbol-value (plist-get first-mail :maildir)))
-                        (`:flags (s-join ", " (mapcar #'symbol-value
-                                                      (plist-get first-mail :flags))))))
+         (field-value (mu4e-alert--get-group first-mail))
          (title-suffix (format (pcase mu4e-alert-group-by
                                  (`:from "from %s:")
                                  (`:to "to %s:")
