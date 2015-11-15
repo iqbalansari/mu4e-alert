@@ -65,8 +65,8 @@ unread emails and should return the string to be displayed in the mode-line"
   :type 'function
   :group 'mu4e-alert)
 
-(defcustom mu4e-alert-notification-formatter
-  #'mu4e-alert-default-notification-formatter
+(defcustom mu4e-alert-email-count-notification-formatter
+  #'mu4e-alert-default-email-count-notification-formatter
   "The function used to get the message for the desktop notification.
 It should be a function that accepts a single argument the current count of
 unread emails and should return the string to be used for the notification"
@@ -291,6 +291,15 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
                         (mapcar (lambda (mail)
                                   (plist-get mail :subject))
                                 mail-group)))))
+
+(defun mu4e-alert-notify-unread-messages (mails)
+  "Display desktop notification for given MAIL-COUNT."
+  (let ((notifications (mapcar mu4e-alert-grouped-mail-notification-formatter
+                               (funcall mu4e-alert-mail-grouper mails))))
+    (dolist (notification (subseq notifications 0 (min 5 (length notifications))))
+      (alert (plist-get notification :body)
+             :title (plist-get notification :title)
+             :category "mu4e-alert"))))
 
 (defun mu4e-alert-notify-unread-messages-count (mail-count)
   "Display desktop notification for given MAIL-COUNT."
