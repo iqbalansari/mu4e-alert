@@ -191,12 +191,6 @@ CALLBACK is called with one argument the interesting emails."
                                          mail-count-command-string)
                           (mu4e-alert--get-mail-sentinel callback))))
 
-(defun mu4e-alert--get-mu-unread-mail-count (callback)
-  "Get the count of interesting emails asynchronously.
-CALLBACK is called with one argument the number of interesting emails"
-  (mu4e-alert--get-mu-unread-mails (lambda (mails)
-                                     (funcall callback (length mails)))))
-
 
 
 ;; Mode-line indicator for unread emails
@@ -235,10 +229,11 @@ formatter when user clicks on mode-line indicator"
   (mu4e-headers-search mu4e-alert-interesting-mail-query))
 
 (defun mu4e-alert-update-mail-count-modeline ()
-  "Update mail count in the mode-line."
-  (mu4e-alert--get-mu-unread-mail-count (lambda (count)
-                                          (setq mu4e-alert-mode-line (funcall mu4e-alert-modeline-formatter count))
-                                          (force-mode-line-update))))
+  "Send a desktop notification about currently unread email."
+  (mu4e-alert--get-mu-unread-mails (lambda (mails)
+                                     (setq mu4e-alert-mode-line (funcall mu4e-alert-modeline-formatter
+                                                                         (length mails)))
+                                     (force-mode-line-update))))
 
 
 
@@ -254,6 +249,14 @@ formatter when user clicks on mode-line indicator"
     (`:priority (symbol-value (plist-get mail :maildir)))
     (`:flags (s-join ", " (mapcar #'symbol-value
                                   (plist-get mail :flags))))))
+
+(defun mu4e-alert-default-email-count-notification-formatter (mail-count)
+  "Default formatter for unread email count.
+MAIL-COUNT is the count of mails for which the string is to displayed"
+  (when (not (zerop mail-count))
+    (if (= mail-count 1)
+        "You have an unread email"
+      (format "You have %s unread email(s)" mail-count))))
 
 (defun mu4e-alert-default-mails-grouper (mails)
   "Default function to group MAILS for notification."
@@ -289,29 +292,18 @@ formatter when user clicks on mode-line indicator"
                                   (plist-get mail :subject))
                                 mail-group)))))
 
-
-
-;; Desktop notifications for unread email counts
-
-(defun mu4e-alert-default-notification-formatter (mail-count)
-  "Default formatter used to get the string for desktop notification.
-MAIL-COUNT is the count of mails for which the string is to displayed"
-  (when (not (zerop mail-count))
-    (if (= mail-count 1)
-        "You have an unread email"
-      (format "You have %s unread emails" mail-count))))
-
-(defun mu4e-alert-notify-unread-messages (mail-count)
+(defun mu4e-alert-notify-unread-messages-count (mail-count)
   "Display desktop notification for given MAIL-COUNT."
   (when (not (zerop mail-count))
-    (alert (funcall 'mu4e-alert-default-notification-formatter
+    (alert (funcall mu4e-alert-email-count-notification-formatter
                     mail-count)
            :title mu4e-alert-title
            :category "mu4e-alert")))
 
-(defun mu4e-alert-notify-async ()
+(defun mu4e-alert-notify-unread-mail-counts-async ()
   "Send a desktop notification about currently unread email."
-  (mu4e-alert--get-mu-unread-mail-count #'mu4e-alert-notify-unread-messages))
+  (mu4e-alert--get-mu-unread-mails (lambda (mails)
+                                     (mu4e-alert-notify-unread-messages-count (length mails)))))
 
 
 
@@ -345,13 +337,13 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 (defun mu4e-alert-enable-notifications ()
   "Enable desktop notifications for unread emails."
   (interactive)
-  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async)
-  (mu4e-alert-notify-async))
+  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-counts-async)
+  (mu4e-alert-notify-unread-mail-counts-async))
 
 (defun mu4e-alert-disable-notifications ()
   "Disable desktop notifications for unread emails."
   (interactive)
-  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async))
+  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-counts-async))
 
 (provide 'mu4e-alert)
 ;;; mu4e-alert.el ends here
