@@ -278,7 +278,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
   (when (not (zerop mail-count))
     (if (= mail-count 1)
         "You have an unread email"
-      (format "You have %s unread email(s)" mail-count))))
+      (format "You have %s unread emails" mail-count))))
 
 (defun mu4e-alert-default-grouped-mail-sorter (group1 group2)
   (not (time-less-p (plist-get (car group1) :date)
