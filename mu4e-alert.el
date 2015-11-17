@@ -156,7 +156,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
              'face display-time-mail-face
              'help-echo (concat (if (= mail-count 1)
                                     "You have an unread email"
-                                  (format "You have %s unread email(s)" mail-count))
+                                  (format "You have %s unread emails" mail-count))
                                 "\nClick here to view "
                                 (if (= mail-count 1) "it" "them"))
              'mouse-face 'mode-line-highlight
@@ -191,7 +191,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
   (when (not (zerop mail-count))
     (if (= mail-count 1)
         "You have an unread email"
-      (format "You have %s unread email(s)" mail-count))))
+      (format "You have %s unread emails" mail-count))))
 
 (defun mu4e-alert-notify-unread-messages (mail-count)
   "Display desktop notification for given MAIL-COUNT."
