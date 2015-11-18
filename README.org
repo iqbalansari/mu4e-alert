@@ -107,7 +107,19 @@
 
 *** General options
     The query used to find unread (read 'interesting') emails can be customized using
-    the variable ~mu4e-alert-interesting-mail-query~
+    the variable ~mu4e-alert-interesting-mail-query~. So, for example,
+    if you want ~mu4e-alert~ to ignore a certain maildir you can
+    customize it to do so. In this example, we ignore a maildir that
+    is located at ~/[Gmail].All Mail~ by adding this to the ~.emacs~ file:
+
+    #+BEGIN_SRC emacs-lisp
+      (setq mu4e-alert-interesting-mail-query
+            (concat
+             "flag:unread"
+             " AND NOT flag:trashed"
+             " AND NOT maildir:"
+             "\"/[Gmail].All Mail\""))
+    #+END_SRC
 
 *** Customizing the desktop notifications
     ~mu4e-alert~ allows you to customize the desktop notifications by setting
