@@ -183,6 +183,8 @@ CALLBACK is called with one argument the interesting emails."
                                                            "--nocolor"
                                                            "-o"
                                                            "sexp"
+                                                           "--sortfield=d"
+                                                           "--reverse"
                                                            (format "--maxnum=%d" mu4e-alert-max-messages-to-process))
                                                      (when mu4e-headers-skip-duplicates
                                                        (list "-u"))
