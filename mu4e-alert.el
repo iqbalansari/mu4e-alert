@@ -73,6 +73,11 @@ unread emails and should return the string to be used for the notification"
   :type 'function
   :group 'mu4e-alert)
 
+(defcustom mu4e-alert-max-messages-to-process 500
+  "Limit searching and processing given number of messages."
+  :type 'integer
+  :group 'mu4e-alert)
+
 (defcustom mu4e-alert-title "mu4e"
   "The title to use for desktop notifications."
   :type 'string
@@ -177,7 +182,8 @@ CALLBACK is called with one argument the interesting emails."
                                                            "find"
                                                            "--nocolor"
                                                            "-o"
-                                                           "sexp")
+                                                           "sexp"
+                                                           (format "--maxnum=%d" mu4e-alert-max-messages-to-process))
                                                      (when mu4e-headers-skip-duplicates
                                                        (list "-u"))
                                                      (when mu4e-mu-home
