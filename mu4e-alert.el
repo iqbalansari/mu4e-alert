@@ -145,6 +145,16 @@ for a group of emails.")
   #'mu4e-alert-default-grouped-mail-sorter
   "The function used to sort the emails after grouping them.")
 
+(defcustom mu4e-alert-email-notification-type '(count mails)
+  "The type of notifications to be displayed for emails.
+
+It is a list of types of notifications to be issues for emails. The list
+can have following elements
+count - Notify the total email count to the user
+mails - Notify with some content of the email, by default the emails are grouped
+        by the sender. And one notification is issued per sender with the
+        subject of the emails is displayed in the notification.")
+
 
 
 ;; Core functions
@@ -329,10 +339,13 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
            :title mu4e-alert-title
            :category "mu4e-alert")))
 
-(defun mu4e-alert-notify-unread-mail-counts-async ()
+(defun mu4e-alert-notify-unread-mail-async ()
   "Send a desktop notification about currently unread email."
   (mu4e-alert--get-mu-unread-mails (lambda (mails)
-                                     (mu4e-alert-notify-unread-messages-count (length mails)))))
+                                     (when (memql 'count mu4e-alert-email-notification-type)
+                                       (mu4e-alert-notify-unread-messages-count (length mails)))
+                                     (when (memql 'mails mu4e-alert-email-notification-type)
+                                       (mu4e-alert-notify-unread-messages mails)))))
 
 
 
@@ -366,13 +379,13 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 (defun mu4e-alert-enable-notifications ()
   "Enable desktop notifications for unread emails."
   (interactive)
-  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-counts-async)
-  (mu4e-alert-notify-unread-mail-counts-async))
+  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-async)
+  (mu4e-alert-notify-unread-mail-async))
 
 (defun mu4e-alert-disable-notifications ()
   "Disable desktop notifications for unread emails."
   (interactive)
-  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-counts-async))
+  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-async))
 
 (provide 'mu4e-alert)
 ;;; mu4e-alert.el ends here
