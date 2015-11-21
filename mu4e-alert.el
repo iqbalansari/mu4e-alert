@@ -141,6 +141,10 @@ mu4e-alert can display the count of unread emails, as well as emails grouped by
 certain field.  This function is used to get the notification to be displayed
 for a group of emails.")
 
+(defcustom mu4e-alert-grouped-mail-sorter
+  #'mu4e-alert-default-grouped-mail-sorter
+  "The function used to sort the emails after grouping them.")
+
 
 
 ;; Core functions
@@ -266,6 +270,10 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
         "You have an unread email"
       (format "You have %s unread email(s)" mail-count))))
 
+(defun mu4e-alert-default-grouped-mail-sorter (group1 group2)
+  (not (time-less-p (plist-get (car group1) :date)
+                    (plist-get (car group2) :date))))
+
 (defun mu4e-alert-default-mails-grouper (mails)
   "Default function to group MAILS for notification."
   (let ((mail-hash (make-hash-table :test #'equal)))
@@ -274,9 +282,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
         (puthash mail-group
                  (cons mail (gethash mail-group mail-hash))
                  mail-hash)))
-    (sort (hash-table-values mail-hash) (lambda (group1 group2)
-                                          (not (time-less-p (plist-get (car group1) :date)
-                                                            (plist-get (car group2) :date)))))))
+    (hash-table-values mail-hash)))
 
 (defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group)
   "Default function to format MAIL-GROUP for notification."
@@ -303,7 +309,8 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAIL-COUNT."
   (let ((notifications (mapcar mu4e-alert-grouped-mail-notification-formatter
-                               (funcall mu4e-alert-mail-grouper mails))))
+                               (sort (funcall mu4e-alert-mail-grouper mails)
+                                     mu4e-alert-grouped-mail-sorter))))
     (dolist (notification (subseq notifications 0 (min 5 (length notifications))))
       (alert (plist-get notification :body)
              :title (plist-get notification :title)
