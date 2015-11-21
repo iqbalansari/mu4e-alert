@@ -284,13 +284,15 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
                  mail-hash)))
     (hash-table-values mail-hash)))
 
-(defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group)
+(defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group all-mails)
   "Default function to format MAIL-GROUP for notification."
   (let* ((mail-count (length mail-group))
+         (total-mails (length all-mails))
          (first-mail (car mail-group))
-         (title-prefix (if (= mail-count 1)
-                           "You have an unread email"
-                         (format "You have %s unread emails" mail-count)))
+         (title-prefix (format "You have [%d/%d] unread email"
+                               mail-count
+                               total-mails
+                               (when (= mail-count 1) "s")))
          (field-value (mu4e-alert--get-group first-mail))
          (title-suffix (format (pcase mu4e-alert-group-by
                                  (`:from "from %s:")
@@ -307,8 +309,11 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
                                 mail-group)))))
 
 (defun mu4e-alert-notify-unread-messages (mails)
-  "Display desktop notification for given MAIL-COUNT."
-  (let ((notifications (mapcar mu4e-alert-grouped-mail-notification-formatter
+  "Display desktop notification for given MAILS."
+  (let ((notifications (mapcar (lambda (group)
+                                 (funcall mu4e-alert-grouped-mail-notification-formatter
+                                          group
+                                          mails))
                                (sort (funcall mu4e-alert-mail-grouper mails)
                                      mu4e-alert-grouped-mail-sorter))))
     (dolist (notification (subseq notifications 0 (min 5 (length notifications))))
