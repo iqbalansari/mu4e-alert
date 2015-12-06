@@ -39,6 +39,7 @@
 (require 'time)
 (require 'advice)
 (require 'pcase)
+(require 'cl-lib)
 
 
 
@@ -335,7 +336,7 @@ ALL-MAILS are the all the unread emails"
                                           mails))
                                (sort (funcall mu4e-alert-mail-grouper mails)
                                      mu4e-alert-grouped-mail-sorter))))
-    (dolist (notification (subseq notifications 0 (min 5 (length notifications))))
+    (dolist (notification (cl-subseq notifications 0 (min 5 (length notifications))))
       (alert (plist-get notification :body)
              :title (plist-get notification :title)
              :category "mu4e-alert"))))
