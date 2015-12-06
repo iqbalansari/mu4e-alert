@@ -148,11 +148,11 @@ for a group of emails.")
 (defcustom mu4e-alert-email-notification-type '(count mails)
   "The type of notifications to be displayed for emails.
 
-It is a list of types of notifications to be issues for emails. The list
+It is a list of types of notifications to be issues for emails.  The list
 can have following elements
 count - Notify the total email count to the user
 mails - Notify with some content of the email, by default the emails are grouped
-        by the sender. And one notification is issued per sender with the
+        by the sender.  And one notification is issued per sender with the
         subject of the emails is displayed in the notification.")
 
 
@@ -262,6 +262,9 @@ formatter when user clicks on mode-line indicator"
 ;; Desktop notifications for unread emails
 
 (defun mu4e-alert--get-group (mail)
+  "Get the group the given MAIL should be put in.
+
+This is an internal function used by `mu4e-alert-default-mails-grouper'."
   (pcase mu4e-alert-group-by
     (`:from (or (caar (plist-get mail :from))
                 (cdar (plist-get mail :from))))
@@ -281,6 +284,10 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
       (format "You have %s unread emails" mail-count))))
 
 (defun mu4e-alert-default-grouped-mail-sorter (group1 group2)
+  "The default function to sort the groups for notification.
+
+GROUP1 and GROUP2 are the group of mails to be sorted.  This function groups
+by the date of first mail of group."
   (not (time-less-p (plist-get (car group1) :date)
                     (plist-get (car group2) :date))))
 
@@ -295,7 +302,9 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
     (hash-table-values mail-hash)))
 
 (defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group all-mails)
-  "Default function to format MAIL-GROUP for notification."
+  "Default function to format MAIL-GROUP for notification.
+
+ALL-MAILS are the all the unread emails"
   (let* ((mail-count (length mail-group))
          (total-mails (length all-mails))
          (first-mail (car mail-group))
