@@ -145,8 +145,8 @@ for a group of emails.")
   #'mu4e-alert-default-grouped-mail-sorter
   "The function used to sort the emails after grouping them.")
 
-(defcustom mu4e-alert-email-notification-type '(count mails)
-  "The type of notifications to be displayed for emails.
+(defcustom mu4e-alert-email-notification-types '(count mails)
+  "The types of notifications to be displayed for emails.
 
 It is a list of types of notifications to be issues for emails.  The list
 can have following elements
@@ -351,9 +351,9 @@ ALL-MAILS are the all the unread emails"
 (defun mu4e-alert-notify-unread-mail-async ()
   "Send a desktop notification about currently unread email."
   (mu4e-alert--get-mu-unread-mails (lambda (mails)
-                                     (when (memql 'count mu4e-alert-email-notification-type)
+                                     (when (memql 'count mu4e-alert-email-notification-types)
                                        (mu4e-alert-notify-unread-messages-count (length mails)))
-                                     (when (memql 'mails mu4e-alert-email-notification-type)
+                                     (when (memql 'mails mu4e-alert-email-notification-types)
                                        (mu4e-alert-notify-unread-messages mails)))))
 
 
