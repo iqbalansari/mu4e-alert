@@ -308,7 +308,7 @@ ALL-MAILS are the all the unread emails"
   (let* ((mail-count (length mail-group))
          (total-mails (length all-mails))
          (first-mail (car mail-group))
-         (title-prefix (format "You have [%d/%d] unread email"
+         (title-prefix (format "You have [%d/%d] unread email%s"
                                mail-count
                                total-mails
                                (when (= mail-count 1) "s")))
@@ -322,10 +322,11 @@ ALL-MAILS are the all the unread emails"
                                field-value))
          (title (format "%s %s\n" title-prefix title-suffix)))
     (list :title title
-          :body (s-join "\n"
-                        (mapcar (lambda (mail)
-                                  (plist-get mail :subject))
-                                mail-group)))))
+          :body (concat " - "
+                        (s-join "\n - "
+                                (mapcar (lambda (mail)
+                                          (plist-get mail :subject))
+                                        mail-group))))))
 
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
