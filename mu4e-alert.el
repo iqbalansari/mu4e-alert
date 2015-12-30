@@ -311,7 +311,7 @@ ALL-MAILS are the all the unread emails"
          (title-prefix (format "You have [%d/%d] unread email%s"
                                mail-count
                                total-mails
-                               (when (= mail-count 1) "s")))
+                               (if (> mail-count 1) "s" "")))
          (field-value (mu4e-alert--get-group first-mail))
          (title-suffix (format (pcase mu4e-alert-group-by
                                  (`:from "from %s:")
