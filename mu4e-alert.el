@@ -5,7 +5,7 @@
 ;; Author: Iqbal Ansari <iqbalansari02@yahoo.com>
 ;; URL: https://github.com/iqbalansari/mu4e-alert
 ;; Keywords: mail, convenience
-;; Version: 0.2
+;; Version: 0.3
 ;; Package-Requires: ((alert "1.2") (s "1.10.0") (emacs "24.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,8 @@
 
 (require 'time)
 (require 'advice)
+(require 'pcase)
+(require 'cl-lib)
 
 
 
@@ -64,12 +66,17 @@ unread emails and should return the string to be displayed in the mode-line"
   :type 'function
   :group 'mu4e-alert)
 
-(defcustom mu4e-alert-notification-formatter
-  #'mu4e-alert-default-notification-formatter
+(defcustom mu4e-alert-email-count-notification-formatter
+  #'mu4e-alert-default-email-count-notification-formatter
   "The function used to get the message for the desktop notification.
 It should be a function that accepts a single argument the current count of
 unread emails and should return the string to be used for the notification"
   :type 'function
+  :group 'mu4e-alert)
+
+(defcustom mu4e-alert-max-messages-to-process 500
+  "Limit searching and processing given number of messages."
+  :type 'integer
   :group 'mu4e-alert)
 
 (defcustom mu4e-alert-title "mu4e"
@@ -105,9 +112,53 @@ See also https://github.com/jwiegley/alert."
   :set (lambda (_ value) (mu4e-alert-set-default-style value))
   :group 'mu4e-alert)
 
+(defcustom mu4e-alert-group-by :from
+  "Field to group messages to be displayed in notifications by.
+
+This should be one of :from, :to, :maildir, :priority and :flags or a function.
+If set to a function, the function should accept a single argument the list of
+messages and return a list of list of messages, where each individual list of
+messages should grouped together in one notification."
+  :type '(radio :tag "Field to group messages to be displayed in notifications"
+                (const :tag "Sender" :from)
+                (const :tag "Recipient" :to)
+                (const :tag "Maildir" :maildir)
+                (const :tag "Priority" :priority)
+                (const :tag "Flags" :flags))
+  :group 'mu4e-alert)
+
+(defcustom mu4e-alert-mail-grouper
+  #'mu4e-alert-default-mails-grouper
+  "The function used to get arrange similar mails in to a group.
+
+It should accept a list of mails and return a list of lists, where each list is
+a group of messages that user should be notified about in one notification.")
+
+(defcustom mu4e-alert-grouped-mail-notification-formatter
+  #'mu4e-alert-default-grouped-mail-notification-formatter
+  "The function used to get the notification for a group of mails.
+
+mu4e-alert can display the count of unread emails, as well as emails grouped by
+certain field.  This function is used to get the notification to be displayed
+for a group of emails.")
+
+(defcustom mu4e-alert-grouped-mail-sorter
+  #'mu4e-alert-default-grouped-mail-sorter
+  "The function used to sort the emails after grouping them.")
+
+(defcustom mu4e-alert-email-notification-types '(count mails)
+  "The types of notifications to be displayed for emails.
+
+It is a list of types of notifications to be issues for emails.  The list
+can have following elements
+count - Notify the total email count to the user
+mails - Notify with some content of the email, by default the emails are grouped
+        by the sender.  And one notification is issued per sender with the
+        subject of the emails is displayed in the notification.")
+
 
 
-;; Basic functions
+;; Core functions
 
 (defun mu4e-alert--sanity-check ()
   "Sanity check run before attempting to fetch unread emails."
@@ -116,28 +167,51 @@ See also https://github.com/jwiegley/alert."
                (file-executable-p mu4e-mu-binary))
     (user-error "Please set `mu4e-mu-binary' to the full path to the mu binary, before attempting to enable `mu4e-alert'")))
 
-(defun mu4e-alert--get-mu-unread-mail-count (callback)
-  "Get the count of unread emails asynchronously.
-CALLBACK is called with one argument the number of unread emails"
+(defun mu4e-alert--parse-mails (buffer)
+  "Parse the emails in BUFFER.
+The buffer holds the emails received from mu in sexp format"
+  (read (concat "("
+                (with-current-buffer buffer (buffer-string))
+                ")")))
+
+(defun mu4e-alert--get-mail-sentinel (callback)
+  "Create sentinel for process to get mails from mu, CALLBACK is called with the unread mails."
+  (lambda (process status)
+    (when (s-equals? (s-trim status) "finished")
+      (let ((mail-buffer (process-buffer process)))
+        (with-current-buffer mail-buffer
+          (funcall callback (mu4e-alert--parse-mails mail-buffer)))))))
+
+(defun mu4e-alert--get-mail-output-buffer ()
+  "Get buffer for storing mails received from mu."
+  (with-current-buffer (get-buffer-create " *mu4e-mails*")
+    (rename-uniquely)
+    (current-buffer)))
+
+(defun mu4e-alert--get-mu-unread-mails (callback)
+  "Get the count of interesting emails asynchronously.
+CALLBACK is called with one argument the interesting emails."
   (mu4e-alert--sanity-check)
   (let* ((mail-count-command (append (mapcar #'shell-quote-argument
                                              (append (list mu4e-mu-binary
                                                            "find"
-                                                           "--nocolor")
-                                                     (when mu4e-headers-skip-duplicates (list "-u"))
+                                                           "--nocolor"
+                                                           "-o"
+                                                           "sexp"
+                                                           "--sortfield=d"
+                                                           (format "--maxnum=%d" mu4e-alert-max-messages-to-process))
+                                                     (when mu4e-headers-skip-duplicates
+                                                       (list "-u"))
                                                      (when mu4e-mu-home
                                                        (list (concat "--muhome=" mu4e-mu-home)))
-                                                     (split-string mu4e-alert-interesting-mail-query)))
-                                     '("2>/dev/null | wc -l")))
-         (mail-count-command-string (s-join " " mail-count-command))
-         (process-filter (lambda (_ output)
-                           (funcall callback (string-to-number (s-trim output))))))
-    (set-process-filter (start-process "mu4e-unread-count"
-                                       nil
-                                       (getenv "SHELL")
-                                       "-c"
-                                       mail-count-command-string)
-                        process-filter)))
+                                                     (split-string mu4e-alert-interesting-mail-query)))))
+         (mail-count-command-string (s-join " " mail-count-command)))
+    (set-process-sentinel (start-process "mu4e-unread-mails"
+                                         (mu4e-alert--get-mail-output-buffer)
+                                         (getenv "SHELL")
+                                         "-c"
+                                         mail-count-command-string)
+                          (mu4e-alert--get-mail-sentinel callback))))
 
 
 
@@ -177,34 +251,111 @@ formatter when user clicks on mode-line indicator"
   (mu4e-headers-search mu4e-alert-interesting-mail-query))
 
 (defun mu4e-alert-update-mail-count-modeline ()
-  "Update mail count in the mode-line."
-  (mu4e-alert--get-mu-unread-mail-count (lambda (count)
-                                          (setq mu4e-alert-mode-line (funcall mu4e-alert-modeline-formatter count))
-                                          (force-mode-line-update))))
+  "Send a desktop notification about currently unread email."
+  (mu4e-alert--get-mu-unread-mails (lambda (mails)
+                                     (setq mu4e-alert-mode-line (funcall mu4e-alert-modeline-formatter
+                                                                         (length mails)))
+                                     (force-mode-line-update))))
 
 
 
 ;; Desktop notifications for unread emails
 
-(defun mu4e-alert-default-notification-formatter (mail-count)
-  "Default formatter used to get the string for desktop notification.
+(defun mu4e-alert--get-group (mail)
+  "Get the group the given MAIL should be put in.
+
+This is an internal function used by `mu4e-alert-default-mails-grouper'."
+  (pcase mu4e-alert-group-by
+    (`:from (or (caar (plist-get mail :from))
+                (cdar (plist-get mail :from))))
+    (`:to (or (caar (plist-get mail :to))
+              (cdar (plist-get mail :to))))
+    (`:maildir (plist-get mail :maildir))
+    (`:priority (symbol-value (plist-get mail :maildir)))
+    (`:flags (s-join ", " (mapcar #'symbol-value
+                                  (plist-get mail :flags))))))
+
+(defun mu4e-alert-default-email-count-notification-formatter (mail-count)
+  "Default formatter for unread email count.
 MAIL-COUNT is the count of mails for which the string is to displayed"
   (when (not (zerop mail-count))
     (if (= mail-count 1)
         "You have an unread email"
       (format "You have %s unread emails" mail-count))))
 
-(defun mu4e-alert-notify-unread-messages (mail-count)
+(defun mu4e-alert-default-grouped-mail-sorter (group1 group2)
+  "The default function to sort the groups for notification.
+
+GROUP1 and GROUP2 are the group of mails to be sorted.  This function groups
+by the date of first mail of group."
+  (not (time-less-p (plist-get (car group1) :date)
+                    (plist-get (car group2) :date))))
+
+(defun mu4e-alert-default-mails-grouper (mails)
+  "Default function to group MAILS for notification."
+  (let ((mail-hash (make-hash-table :test #'equal)))
+    (dolist (mail mails)
+      (let ((mail-group (mu4e-alert--get-group mail)))
+        (puthash mail-group
+                 (cons mail (gethash mail-group mail-hash))
+                 mail-hash)))
+    (hash-table-values mail-hash)))
+
+(defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group all-mails)
+  "Default function to format MAIL-GROUP for notification.
+
+ALL-MAILS are the all the unread emails"
+  (let* ((mail-count (length mail-group))
+         (total-mails (length all-mails))
+         (first-mail (car mail-group))
+         (title-prefix (format "You have [%d/%d] unread email%s"
+                               mail-count
+                               total-mails
+                               (if (> mail-count 1) "s" "")))
+         (field-value (mu4e-alert--get-group first-mail))
+         (title-suffix (format (pcase mu4e-alert-group-by
+                                 (`:from "from %s:")
+                                 (`:to "to %s:")
+                                 (`:maildir "in %s:")
+                                 (`:priority "with %s priority:")
+                                 (`:flags "with %s flags:"))
+                               field-value))
+         (title (format "%s %s\n" title-prefix title-suffix)))
+    (list :title title
+          :body (concat " - "
+                        (s-join "\n - "
+                                (mapcar (lambda (mail)
+                                          (plist-get mail :subject))
+                                        mail-group))))))
+
+(defun mu4e-alert-notify-unread-messages (mails)
+  "Display desktop notification for given MAILS."
+  (let ((notifications (mapcar (lambda (group)
+                                 (funcall mu4e-alert-grouped-mail-notification-formatter
+                                          group
+                                          mails))
+                               (sort (funcall mu4e-alert-mail-grouper mails)
+                                     mu4e-alert-grouped-mail-sorter))))
+    (dolist (notification (cl-subseq notifications 0 (min 5 (length notifications))))
+      (alert (plist-get notification :body)
+             :title (plist-get notification :title)
+             :category "mu4e-alert"))))
+
+(defun mu4e-alert-notify-unread-messages-count (mail-count)
   "Display desktop notification for given MAIL-COUNT."
   (when (not (zerop mail-count))
-    (alert (funcall 'mu4e-alert-default-notification-formatter
+    (alert (funcall mu4e-alert-email-count-notification-formatter
                     mail-count)
            :title mu4e-alert-title
            :category "mu4e-alert")))
 
-(defun mu4e-alert-notify-async ()
+(defun mu4e-alert-notify-unread-mail-async ()
   "Send a desktop notification about currently unread email."
-  (mu4e-alert--get-mu-unread-mail-count #'mu4e-alert-notify-unread-messages))
+  (mu4e-alert--get-mu-unread-mails (lambda (mails)
+                                     (when (memql 'count mu4e-alert-email-notification-types)
+                                       (mu4e-alert-notify-unread-messages-count (length mails)))
+                                     (when (memql 'mails mu4e-alert-email-notification-types)
+                                       (mu4e-alert-notify-unread-messages mails)))))
 
 
 
@@ -238,13 +389,13 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
 (defun mu4e-alert-enable-notifications ()
   "Enable desktop notifications for unread emails."
   (interactive)
-  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async)
-  (mu4e-alert-notify-async))
+  (add-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-async)
+  (mu4e-alert-notify-unread-mail-async))
 
 (defun mu4e-alert-disable-notifications ()
   "Disable desktop notifications for unread emails."
   (interactive)
-  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-async))
+  (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-notify-unread-mail-async))
 
 (provide 'mu4e-alert)
 ;;; mu4e-alert.el ends here
