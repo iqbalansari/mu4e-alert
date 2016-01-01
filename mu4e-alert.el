@@ -5,7 +5,7 @@
 ;; Author: Iqbal Ansari <iqbalansari02@yahoo.com>
 ;; URL: https://github.com/iqbalansari/mu4e-alert
 ;; Keywords: mail, convenience
-;; Version: 0.2
+;; Version: 0.3
 ;; Package-Requires: ((alert "1.2") (s "1.10.0") (emacs "24.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
