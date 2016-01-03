@@ -140,13 +140,12 @@
      ~mu4e-alert~ allows you to customize the notifications for emails count by
      setting the following values
 
-     |-----------------------------------------------+------------------------------------------------+-------------------------------------------------------|
-     | Variable                                      | Aspect customized                              | Default                                               |
-     |-----------------------------------------------+------------------------------------------------+-------------------------------------------------------|
-     | mu4e-alert-email-count-title                  | Title used for email count notifications       | mu4e                                                  |
-     | mu4e-alert-email-count-notification-formatter | Formatting the message body of the email count | mu4e-alert-default-email-count-notification-formatter |
-     |                                               | notification                                   |                                                       |
-     |-----------------------------------------------+------------------------------------------------+-------------------------------------------------------|
+     |-----------------------------------------------+-------------------------------------------------------|
+     | Variable                                      | Aspect customized                                     |
+     |-----------------------------------------------+-------------------------------------------------------|
+     | mu4e-alert-email-count-title                  | Title used for email count notifications              |
+     | mu4e-alert-email-count-notification-formatter | Formatting the message body of the email notification |
+     |-----------------------------------------------+-------------------------------------------------------|
 
 **** Customizing the notifications for unread emails subjects
      For displaying subjects of unread emails, ~mu4e-alert~ groups unread emails
@@ -155,17 +154,14 @@
 
      The following variables can be used to customize the notifications for subjects
 
-     |------------------------------------------------+---------------------------------------------------+--------------------------------------------------------|
-     | Variable                                       | Aspect customized                                 | Default                                                |
-     |------------------------------------------------+---------------------------------------------------+--------------------------------------------------------|
-     | mu4e-alert-mail-grouper                        | Function used to group unread emails              | mu4e-alert-default-mails-grouper                       |
-     | mu4e-alert-group-by                            | Field used to group emails (this is               | :from                                                  |
-     |                                                | applicable only if mu4e-alert-mail-grouper        |                                                        |
-     |                                                | is set to the default value)                      |                                                        |
-     | mu4e-alert-grouped-mail-sorter                 | Function used to sort the groups of unread emails | mu4e-alert-default-grouped-mail-sorter                 |
-     | mu4e-alert-grouped-mail-notification-formatter | Function used to get notification for group of    | mu4e-alert-default-grouped-mail-notification-formatter |
-     |                                                | unread emails                                     |                                                        |
-     |------------------------------------------------+---------------------------------------------------+--------------------------------------------------------|
+     |------------------------------------------------+-------------------------------------------------------------------------------------------------------------|
+     | Variable                                       | Aspect customized                                                                                           |
+     |------------------------------------------------+-------------------------------------------------------------------------------------------------------------|
+     | mu4e-alert-mail-grouper                        | Function used to group unread emails                                                                        |
+     | mu4e-alert-group-by                            | Field used to group emails (this is applicable only if mu4e-alert-mail-grouper is set to the default value) |
+     | mu4e-alert-grouped-mail-sorter                 | Function used to sort the groups of unread emails                                                           |
+     | mu4e-alert-grouped-mail-notification-formatter | Function used to get notification for group of unread emails                                                |
+     |------------------------------------------------+-------------------------------------------------------------------------------------------------------------|
 
 *** Customizing the mode-line display
     The mode-line indicator for unread emails can be customized by setting the
