@@ -19,6 +19,8 @@
      - [[#customizing-the-desktop-notifications][Customizing the desktop notifications]]
      - [[#customizing-the-mode-line-display][Customizing the mode-line display]]
    - [[#getting-desktop-notifications][Getting desktop notifications]]
+     - [[#linux][Linux]]
+     - [[#mac-osx][Mac OSX]]
    - [[#advanced-customizations][Advanced customizations]]
 
 ** What is this?
@@ -180,29 +182,29 @@
 
    The styles available vary according to the OS
 
-***** Linux
-       The following styles for desktop notifications, are available on Linux
+*** Linux
+     The following styles for desktop notifications, are available on Linux
 
-****** notifications
-        This style uses ~notifications.el~ an implementation of the Desktop
-        Notifications API, which ships with Emacs. It requires that Emacs is
-        compiled with DBus support
+**** notifications
+      This style uses ~notifications.el~ an implementation of the Desktop
+      Notifications API, which ships with Emacs. It requires that Emacs is
+      compiled with DBus support
 
-****** libnotify
-        This style uses the command-line program ~notify-send~ to notify the user.
-        The program should be in ~PATH~
+**** libnotify
+      This style uses the command-line program ~notify-send~ to notify the user.
+      The program should be in ~PATH~
 
-***** Mac OSX
-       The following styles for desktop notifications, are available on Mac OSX.
-       Also see the discussion on the issue [[https://github.com/iqbalansari/mu4e-alert/issues/2][Does it works with MacOS X?]]
+*** Mac OSX
+     The following styles for desktop notifications, are available on Mac OSX.
+     Also see the discussion on the issue [[https://github.com/iqbalansari/mu4e-alert/issues/2][Does it works with MacOS X?]]
 
-****** growl
-        This style uses the command-line program ~growlnotify~ to notify the user
-        using ~Growl~. The program should be in ~PATH~
+**** growl
+      This style uses the command-line program ~growlnotify~ to notify the user
+      using ~Growl~. The program should be in ~PATH~
 
-****** notifier
-        This style uses the command-line program ~terminal-notifier~ to notify the
-        user. The program should be in ~PATH~
+**** notifier
+      This style uses the command-line program ~terminal-notifier~ to notify the
+      user. The program should be in ~PATH~
 
 ** Advanced customizations
    ~mu4e-alert~ uses the excellent [[https://github.com/jwiegley/alert][alert]] library for desktop notifications, more
