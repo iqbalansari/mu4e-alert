@@ -6,7 +6,7 @@
 ;; URL: https://github.com/iqbalansari/mu4e-alert
 ;; Keywords: mail, convenience
 ;; Version: 0.3
-;; Package-Requires: ((alert "1.2") (s "1.10.0") (emacs "24.1"))
+;; Package-Requires: ((alert "1.2") (s "1.10.0") (ht "2.0") (emacs "24.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@
 (require 'mu4e)
 (require 'alert)
 (require 's)
+(require 'ht)
 
 (require 'time)
 (require 'advice)
@@ -293,13 +294,13 @@ by the date of first mail of group."
 
 (defun mu4e-alert-default-mails-grouper (mails)
   "Default function to group MAILS for notification."
-  (let ((mail-hash (make-hash-table :test #'equal)))
+  (let ((mail-hash (ht-create #'equal)))
     (dolist (mail mails)
       (let ((mail-group (mu4e-alert--get-group mail)))
         (puthash mail-group
                  (cons mail (gethash mail-group mail-hash))
                  mail-hash)))
-    (hash-table-values mail-hash)))
+    (ht-values mail-hash)))
 
 (defun mu4e-alert-default-grouped-mail-notification-formatter (mail-group all-mails)
   "Default function to format MAIL-GROUP for notification.
