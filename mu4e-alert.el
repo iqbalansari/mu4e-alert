@@ -129,6 +129,11 @@ subjects - Notify with some content of the email, by default the emails are
            grouped by the sender.  And one notification is issued per sender
            with the subject of the emails is displayed in the notification.")
 
+(defcustom mu4e-alert-set-window-urgency t
+  "Set window urgency on recieving unread emails.
+
+If non-nil `mu4e-alert' will set the WM_URGENT on detecting unread messages")
+
 ;;;###autoload
 (defun mu4e-alert-set-default-style (value)
   "Set the default style for unread email notifications.
@@ -263,6 +268,28 @@ formatter when user clicks on mode-line indicator"
 
 ;; Desktop notifications for unread emails
 
+(defun mu4e-alert--set-x-urgency-hint (frame arg)
+  "Set window urgency hint for given FRAME.
+
+ARG should be non-nil to set the flag or nil to clear the flag.
+
+Taken from: http://www.emacswiki.org/emacs/JabberEl#toc17"
+  (let* ((wm-hints (append (x-window-property "WM_HINTS" frame "WM_HINTS" nil nil t) nil))
+         (flags (car wm-hints)))
+    (setcar wm-hints
+            (if arg
+                (logior flags #x00000100)
+              (logand flags #x1ffffeff)))
+    (x-change-window-property "WM_HINTS" wm-hints frame "WM_HINTS" 32 t)))
+
+(defun mu4e-alert--get-mu4e-frame ()
+  "Try getting a frame containing a mu4e buffer."
+  (car (delq nil (mapcar (lambda (buffer)
+                           (when (and buffer
+                                      (get-buffer-window buffer t))
+                             (window-frame (get-buffer-window buffer t))))
+                         (list mu4e~headers-buffer mu4e~view-buffer mu4e~main-buffer-name)))))
+
 (defun mu4e-alert--get-group (mail)
   "Get the group the given MAIL should be put in.
 
@@ -330,6 +357,15 @@ ALL-MAILS are the all the unread emails"
                                           (plist-get mail :subject))
                                         mail-group))))))
 
+(defun mu4e-alert-set-window-urgency-maybe ()
+  "Set urgency hint to current frame."
+  (when (and mu4e-alert-set-window-urgency
+             (display-graphic-p)
+             (memql system-type '(gnu gnu/linux)))
+    (mu4e-alert--set-x-urgency-hint (or (mu4e-alert--get-mu4e-frame)
+                                        (selected-frame))
+                                    t)))
+
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
   (let ((notifications (mapcar (lambda (group)
@@ -341,7 +377,8 @@ ALL-MAILS are the all the unread emails"
     (dolist (notification (cl-subseq notifications 0 (min 5 (length notifications))))
       (alert (plist-get notification :body)
              :title (plist-get notification :title)
-             :category "mu4e-alert"))))
+             :category "mu4e-alert"))
+    (mu4e-alert-set-window-urgency-maybe)))
 
 (defun mu4e-alert-notify-unread-messages-count (mail-count)
   "Display desktop notification for given MAIL-COUNT."
