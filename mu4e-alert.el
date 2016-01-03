@@ -84,6 +84,50 @@ unread emails and should return the string to be used for the notification"
   :type 'string
   :group 'mu4e-alert)
 
+(defcustom mu4e-alert-group-by :from
+  "Field to group messages to be displayed in notifications by.
+
+This should be one of :from, :to, :maildir, :priority and :flags or a function.
+If set to a function, the function should accept a single argument the list of
+messages and return a list of list of messages, where each individual list of
+messages should grouped together in one notification."
+  :type '(radio :tag "Field to group messages to be displayed in notifications"
+                (const :tag "Sender" :from)
+                (const :tag "Recipient" :to)
+                (const :tag "Maildir" :maildir)
+                (const :tag "Priority" :priority)
+                (const :tag "Flags" :flags))
+  :group 'mu4e-alert)
+
+(defcustom mu4e-alert-mail-grouper
+  #'mu4e-alert-default-mails-grouper
+  "The function used to get arrange similar mails in to a group.
+
+It should accept a list of mails and return a list of lists, where each list is
+a group of messages that user should be notified about in one notification.")
+
+(defcustom mu4e-alert-grouped-mail-sorter
+  #'mu4e-alert-default-grouped-mail-sorter
+  "The function used to sort the emails after grouping them.")
+
+(defcustom mu4e-alert-grouped-mail-notification-formatter
+  #'mu4e-alert-default-grouped-mail-notification-formatter
+  "The function used to get the notification for a group of mails.
+
+The function is used get the notification to be displayed for a group of emails.
+It should return a plist with keys :title and :body with the value of title and
+body for the notification respectively.")
+
+(defcustom mu4e-alert-email-notification-types '(count subjects)
+  "The types of notifications to be displayed for emails.
+
+It is a list of types of notifications to be issues for emails.  The list can
+have following elements
+count    - Notify the total email count to the user
+subjects - Notify with some content of the email, by default the emails are
+           grouped by the sender.  And one notification is issued per sender
+           with the subject of the emails is displayed in the notification.")
+
 ;;;###autoload
 (defun mu4e-alert-set-default-style (value)
   "Set the default style for unread email notifications.
@@ -111,50 +155,6 @@ See also https://github.com/jwiegley/alert."
   :type (alert-styles-radio-type 'radio)
   :set (lambda (_ value) (mu4e-alert-set-default-style value))
   :group 'mu4e-alert)
-
-(defcustom mu4e-alert-group-by :from
-  "Field to group messages to be displayed in notifications by.
-
-This should be one of :from, :to, :maildir, :priority and :flags or a function.
-If set to a function, the function should accept a single argument the list of
-messages and return a list of list of messages, where each individual list of
-messages should grouped together in one notification."
-  :type '(radio :tag "Field to group messages to be displayed in notifications"
-                (const :tag "Sender" :from)
-                (const :tag "Recipient" :to)
-                (const :tag "Maildir" :maildir)
-                (const :tag "Priority" :priority)
-                (const :tag "Flags" :flags))
-  :group 'mu4e-alert)
-
-(defcustom mu4e-alert-mail-grouper
-  #'mu4e-alert-default-mails-grouper
-  "The function used to get arrange similar mails in to a group.
-
-It should accept a list of mails and return a list of lists, where each list is
-a group of messages that user should be notified about in one notification.")
-
-(defcustom mu4e-alert-grouped-mail-notification-formatter
-  #'mu4e-alert-default-grouped-mail-notification-formatter
-  "The function used to get the notification for a group of mails.
-
-mu4e-alert can display the count of unread emails, as well as emails grouped by
-certain field.  This function is used to get the notification to be displayed
-for a group of emails.")
-
-(defcustom mu4e-alert-grouped-mail-sorter
-  #'mu4e-alert-default-grouped-mail-sorter
-  "The function used to sort the emails after grouping them.")
-
-(defcustom mu4e-alert-email-notification-types '(count mails)
-  "The types of notifications to be displayed for emails.
-
-It is a list of types of notifications to be issues for emails.  The list
-can have following elements
-count - Notify the total email count to the user
-mails - Notify with some content of the email, by default the emails are grouped
-        by the sender.  And one notification is issued per sender with the
-        subject of the emails is displayed in the notification.")
 
 
 
@@ -322,8 +322,8 @@ ALL-MAILS are the all the unread emails"
                                field-value))
          (title (format "%s %s\n" title-prefix title-suffix)))
     (list :title title
-          :body (concat " - "
-                        (s-join "\n - "
+          :body (concat "• "
+                        (s-join "\n• "
                                 (mapcar (lambda (mail)
                                           (plist-get mail :subject))
                                         mail-group))))))
@@ -354,7 +354,7 @@ ALL-MAILS are the all the unread emails"
   (mu4e-alert--get-mu-unread-mails (lambda (mails)
                                      (when (memql 'count mu4e-alert-email-notification-types)
                                        (mu4e-alert-notify-unread-messages-count (length mails)))
-                                     (when (memql 'mails mu4e-alert-email-notification-types)
+                                     (when (memql 'subjects mu4e-alert-email-notification-types)
                                        (mu4e-alert-notify-unread-messages mails)))))
 
 
