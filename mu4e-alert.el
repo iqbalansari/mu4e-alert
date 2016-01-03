@@ -177,8 +177,8 @@ The buffer holds the emails received from mu in sexp format"
 
 (defun mu4e-alert--get-mail-sentinel (callback)
   "Create sentinel for process to get mails from mu, CALLBACK is called with the unread mails."
-  (lambda (process status)
-    (when (s-equals? (s-trim status) "finished")
+  (lambda (process _)
+    (when (memql (process-status process) '(exit signal))
       (let ((mail-buffer (process-buffer process)))
         (with-current-buffer mail-buffer
           (funcall callback (mu4e-alert--parse-mails mail-buffer)))))))
@@ -205,7 +205,8 @@ CALLBACK is called with one argument the interesting emails."
                                                        (list "-u"))
                                                      (when mu4e-mu-home
                                                        (list (concat "--muhome=" mu4e-mu-home)))
-                                                     (split-string mu4e-alert-interesting-mail-query)))))
+                                                     (split-string mu4e-alert-interesting-mail-query)))
+                                     '("2>/dev/null")))
          (mail-count-command-string (s-join " " mail-count-command)))
     (set-process-sentinel (start-process "mu4e-unread-mails"
                                          (mu4e-alert--get-mail-output-buffer)
