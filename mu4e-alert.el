@@ -215,7 +215,7 @@ CALLBACK is called with one argument the interesting emails."
          (mail-count-command-string (s-join " " mail-count-command)))
     (set-process-sentinel (start-process "mu4e-unread-mails"
                                          (mu4e-alert--get-mail-output-buffer)
-                                         (getenv "SHELL")
+                                         (executable-find "sh")
                                          "-c"
                                          mail-count-command-string)
                           (mu4e-alert--get-mail-sentinel callback))))

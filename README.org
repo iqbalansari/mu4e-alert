@@ -29,9 +29,9 @@
 
 ** Requirements
    This package requires Emacs v24.1 or above. It assumes that you have a
-   working mu/mu4e setup. Additionally it requires the program ~wc~ and that the
-   user shell to support pipe (~|~) operator, this should not be a problem on
-   any UNIXy system (including Mac OSX).
+   working mu/mu4e setup. Additionally it requires `/bin/sh` which should be
+   available on any UNIXy system. Issues/Pull requests improving system
+   compatibility are welcome.
 
    However it might not work on Windows unless you have something like ~cygwin~
    installed. Pull requests to improve Windows support are welcome.
