@@ -378,7 +378,8 @@ ALL-MAILS are the all the unread emails"
       (alert (plist-get notification :body)
              :title (plist-get notification :title)
              :category "mu4e-alert"))
-    (mu4e-alert-set-window-urgency-maybe)))
+    (when notifications
+      (mu4e-alert-set-window-urgency-maybe))))
 
 (defun mu4e-alert-notify-unread-messages-count (mail-count)
   "Display desktop notification for given MAIL-COUNT."
