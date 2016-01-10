@@ -33,9 +33,6 @@
    available on any UNIXy system. Issues/Pull requests improving system
    compatibility are welcome.
 
-   However it might not work on Windows unless you have something like ~cygwin~
-   installed. Pull requests to improve Windows support are welcome.
-
 ** Installation
 *** ELPA
     ~mu4e-alert~ is available on [[http://melpa.org/#/mu4e-alert][MELPA]] and [[http://stable.melpa.org/#/mu4e-alert][MELPA Stable]]. Please follow the instructions on
