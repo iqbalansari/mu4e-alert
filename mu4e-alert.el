@@ -298,7 +298,10 @@ It also marks the frame, so that we can clear it later."
 This only removes the hints added by `mu4e-alert'"
   (dolist (frame (frame-list))
     (when (and (frame-live-p frame)
-               (x-window-property mu4e-alert-urgent-window-flag frame)))
+               ;; Wrapped in ignore-errors to prevent errors for
+               ;; frames that do not support x-window-property
+               (ignore-errors (x-window-property mu4e-alert-urgent-window-flag
+                                                 frame))))
     (mu4e-alert--set-x-urgency-hint frame nil)
     (x-delete-window-property mu4e-alert-urgent-window-flag frame)))
 
