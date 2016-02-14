@@ -266,6 +266,8 @@ formatter when user clicks on mode-line indicator"
 
 ;; Desktop notifications for unread emails
 
+
+;;;; Setting urgency hint for Emacs frames
 (defun mu4e-alert--set-x-urgency-hint (frame arg)
   "Set window urgency hint for given FRAME.
 
@@ -307,6 +309,25 @@ This only removes the hints added by `mu4e-alert'"
                                       (get-buffer-window buffer t))
                              (window-frame (get-buffer-window buffer t))))
                          (list mu4e~headers-buffer mu4e~view-buffer mu4e~main-buffer-name)))))
+
+(defun mu4e-alert--setup-clear-urgency ()
+  "Setup hooks to clear the urgency hooks."
+  ;; if focus-in-hook (pre Emacs 24.4) is not defined hook into
+  ;; post-command-hook instead
+  (add-hook (if (boundp 'focus-in-hook) 'focus-in-hook 'post-command-hook)
+            #'mu4e-alert-clear-urgency-hints))
+
+(defun mu4e-alert-set-window-urgency-maybe ()
+  "Set urgency hint to current frame."
+  (when (and mu4e-alert-set-window-urgency
+             (display-graphic-p)
+             (memql system-type '(gnu gnu/linux)))
+    (let ((frame (or (mu4e-alert--get-mu4e-frame)
+                     (selected-frame))))
+      ;; Do not set urgency hint if the frame is visible
+      (unless (eq (frame-visible-p frame) t)
+        (mu4e-alert-set-x-urgency-hint frame)
+        (mu4e-alert--setup-clear-urgency)))))
 
 (defun mu4e-alert--get-group (mail)
   "Get the group the given MAIL should be put in.
@@ -374,23 +395,6 @@ ALL-MAILS are the all the unread emails"
                                 (mapcar (lambda (mail)
                                           (plist-get mail :subject))
                                         mail-group))))))
-
-(defun mu4e-alert--setup-clear-urgency ()
-  "Setup hooks to clear the urgency hooks."
-  ;; if focus-in-hook (pre Emacs 24.4) is not defined hook into
-  ;; post-command-hook instead
-  (add-hook (if (boundp 'focus-in-hook) 'focus-in-hook 'post-command-hook)
-            #'mu4e-alert-clear-urgency-hints))
-
-(defun mu4e-alert-set-window-urgency-maybe ()
-  "Set urgency hint to current frame."
-  (when (and mu4e-alert-set-window-urgency
-             (display-graphic-p)
-             (memql system-type '(gnu gnu/linux)))
-    (let ((frame (or (mu4e-alert--get-mu4e-frame)
-                     (selected-frame))))
-      (mu4e-alert-set-x-urgency-hint frame)
-      (mu4e-alert--setup-clear-urgency))))
 
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
