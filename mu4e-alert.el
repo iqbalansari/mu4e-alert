@@ -399,14 +399,29 @@ ALL-MAILS are the all the unread emails"
                                           (plist-get mail :subject))
                                         mail-group))))))
 
+(defvar mu4e-alert-seen-mails (ht-create #'equal))
+
+(defun mu4e-alert-filter-seen-mails (mails)
+  "Filters the MAILS that have been seen already."
+  (cl-remove-if (lambda (mail)
+                  (prog1 (ht-get mu4e-alert-seen-mails
+                                 (plist-get mail :id))
+                    (ht-set! mu4e-alert-seen-mails
+                             (plist-get mail :id)
+                             t)))
+                mails))
+
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
-  (let ((notifications (mapcar (lambda (group)
-                                 (funcall mu4e-alert-grouped-mail-notification-formatter
-                                          group
-                                          mails))
-                               (sort (funcall mu4e-alert-mail-grouper mails)
-                                     mu4e-alert-grouped-mail-sorter))))
+  (let* ((mail-groups (funcall mu4e-alert-mail-grouper
+                               mails))
+         (sorted-mail-groups (sort mail-groups
+                                   mu4e-alert-grouped-mail-sorter))
+         (notifications (mapcar (lambda (group)
+                                  (funcall mu4e-alert-grouped-mail-notification-formatter
+                                           group
+                                           mails))
+                                sorted-mail-groups)))
     (dolist (notification (cl-subseq notifications 0 (min 5 (length notifications))))
       (alert (plist-get notification :body)
              :title (plist-get notification :title)
@@ -425,10 +440,11 @@ ALL-MAILS are the all the unread emails"
 (defun mu4e-alert-notify-unread-mail-async ()
   "Send a desktop notification about currently unread email."
   (mu4e-alert--get-mu-unread-mails (lambda (mails)
-                                     (when (memql 'count mu4e-alert-email-notification-types)
-                                       (mu4e-alert-notify-unread-messages-count (length mails)))
-                                     (when (memql 'subjects mu4e-alert-email-notification-types)
-                                       (mu4e-alert-notify-unread-messages mails)))))
+                                     (let ((new-mails (mu4e-alert-filter-seen-mails mails)))
+                                       (when (memql 'count mu4e-alert-email-notification-types)
+                                         (mu4e-alert-notify-unread-messages-count (length new-mails)))
+                                       (when (memql 'subjects mu4e-alert-email-notification-types)
+                                         (mu4e-alert-notify-unread-messages new-mails))))))
 
 
 
