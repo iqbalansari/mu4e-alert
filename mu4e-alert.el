@@ -328,9 +328,8 @@ This only removes the hints added by `mu4e-alert'"
     (let ((frame (or (mu4e-alert--get-mu4e-frame)
                      (selected-frame))))
       ;; Do not set urgency hint if the frame is visible
-      (unless (eq (frame-visible-p frame) t)
-        (mu4e-alert-set-x-urgency-hint frame)
-        (mu4e-alert--setup-clear-urgency)))))
+      (mu4e-alert-set-x-urgency-hint frame)
+      (mu4e-alert--setup-clear-urgency))))
 
 (defun mu4e-alert--get-group (mail)
   "Get the group the given MAIL should be put in.
