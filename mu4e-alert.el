@@ -280,6 +280,26 @@ Taken from: http://www.emacswiki.org/emacs/JabberEl#toc17"
               (logand flags #x1ffffeff)))
     (x-change-window-property "WM_HINTS" wm-hints frame "WM_HINTS" 32 t)))
 
+(defvar mu4e-alert-urgent-window-flag "mu4e-alert-urgent")
+
+(defun mu4e-alert-set-x-urgency-hint (frame)
+  "Set urgency hint for given FRAME.
+
+It also marks the frame, so that we can clear it later."
+  (mu4e-alert--set-x-urgency-hint frame t)
+  ;; Remember that we have set an urgency hint on this frame
+  (x-change-window-property mu4e-alert-urgent-window-flag "true" frame))
+
+(defun mu4e-alert-clear-urgency-hints ()
+  "Clear urgency hint for all frames.
+
+This only removes the hints added by `mu4e-alert'"
+  (dolist (frame (frame-list))
+    (when (and (frame-live-p frame)
+               (x-window-property mu4e-alert-urgent-window-flag frame)))
+    (mu4e-alert--set-x-urgency-hint frame nil)
+    (x-delete-window-property mu4e-alert-urgent-window-flag frame)))
+
 (defun mu4e-alert--get-mu4e-frame ()
   "Try getting a frame containing a mu4e buffer."
   (car (delq nil (mapcar (lambda (buffer)
@@ -355,14 +375,22 @@ ALL-MAILS are the all the unread emails"
                                           (plist-get mail :subject))
                                         mail-group))))))
 
+(defun mu4e-alert--setup-clear-urgency ()
+  "Setup hooks to clear the urgency hooks."
+  ;; if focus-in-hook (pre Emacs 24.4) is not defined hook into
+  ;; post-command-hook instead
+  (add-hook (if (boundp 'focus-in-hook) 'focus-in-hook 'post-command-hook)
+            #'mu4e-alert-clear-urgency-hints))
+
 (defun mu4e-alert-set-window-urgency-maybe ()
   "Set urgency hint to current frame."
   (when (and mu4e-alert-set-window-urgency
              (display-graphic-p)
              (memql system-type '(gnu gnu/linux)))
-    (mu4e-alert--set-x-urgency-hint (or (mu4e-alert--get-mu4e-frame)
-                                        (selected-frame))
-                                    t)))
+    (let ((frame (or (mu4e-alert--get-mu4e-frame)
+                     (selected-frame))))
+      (mu4e-alert-set-x-urgency-hint frame)
+      (mu4e-alert--setup-clear-urgency))))
 
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
