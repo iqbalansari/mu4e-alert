@@ -301,9 +301,9 @@ This only removes the hints added by `mu4e-alert'"
                ;; Wrapped in ignore-errors to prevent errors for
                ;; frames that do not support x-window-property
                (ignore-errors (x-window-property mu4e-alert-urgent-window-flag
-                                                 frame))))
-    (mu4e-alert--set-x-urgency-hint frame nil)
-    (x-delete-window-property mu4e-alert-urgent-window-flag frame)))
+                                                 frame)))
+      (mu4e-alert--set-x-urgency-hint frame nil)
+      (x-delete-window-property mu4e-alert-urgent-window-flag frame))))
 
 (defun mu4e-alert--get-mu4e-frame ()
   "Try getting a frame containing a mu4e buffer."
