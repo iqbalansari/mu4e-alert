@@ -134,6 +134,17 @@ subjects - Notify with some content of the email, by default the emails are
 
 If non-nil `mu4e-alert' will set the WM_URGENT on detecting unread messages")
 
+(defcustom mu4e-alert-notify-repeated-mails nil
+  "Notify about interesting mails that were notified about earlier.
+
+By default `mu4e-alert' does not notify about mails it has notified about
+earlier.  For example, suppose you get two unread emails you read one and leave
+the other unread, next time the when mu4e-alert checks for unread emails, it
+will filter out the second message and show notifications only for mails that
+have arrived after the first check.  Set this option to a non-nil value if you
+wish to be notified of all emails at each check irrespective of whether you have
+been notified of the an email earlier or no.")
+
 ;;;###autoload
 (defun mu4e-alert-set-default-style (value)
   "Set the default style for unread email notifications.
@@ -266,7 +277,6 @@ formatter when user clicks on mode-line indicator"
 
 ;; Desktop notifications for unread emails
 
-
 ;;;; Setting urgency hint for Emacs frames
 (defun mu4e-alert--set-x-urgency-hint (frame arg)
   "Set window urgency hint for given FRAME.
@@ -330,6 +340,19 @@ This only removes the hints added by `mu4e-alert'"
       ;; Do not set urgency hint if the frame is visible
       (mu4e-alert-set-x-urgency-hint frame)
       (mu4e-alert--setup-clear-urgency))))
+
+(defvar mu4e-alert-repeated-mails (ht-create #'equal))
+
+(defun mu4e-alert-filter-repeated-mails (mails)
+  "Filters the MAILS that have been seen already."
+  (cl-remove-if (lambda (mail)
+                  (prog1 (and (not mu4e-alert-notify-repeated-mails)
+                              (ht-get mu4e-alert-repeated-mails
+                                      (plist-get mail :id)))
+                    (ht-set! mu4e-alert-repeated-mails
+                             (plist-get mail :id)
+                             t)))
+                mails))
 
 (defun mu4e-alert--get-group (mail)
   "Get the group the given MAIL should be put in.
@@ -398,14 +421,30 @@ ALL-MAILS are the all the unread emails"
                                           (plist-get mail :subject))
                                         mail-group))))))
 
+(defvar mu4e-alert-repeated-mails (ht-create #'equal))
+
+(defun mu4e-alert-filter-repeated-mails (mails)
+  "Filters the MAILS that have been seen already."
+  (cl-remove-if (lambda (mail)
+                  (prog1 (or mu4e-alert-notify-repeated-mails
+                             (ht-get mu4e-alert-repeated-mails
+                                     (plist-get mail :id)))
+                    (ht-set! mu4e-alert-repeated-mails
+                             (plist-get mail :id)
+                             t)))
+                mails))
+
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
-  (let ((notifications (mapcar (lambda (group)
-                                 (funcall mu4e-alert-grouped-mail-notification-formatter
-                                          group
-                                          mails))
-                               (sort (funcall mu4e-alert-mail-grouper mails)
-                                     mu4e-alert-grouped-mail-sorter))))
+  (let* ((mail-groups (funcall mu4e-alert-mail-grouper
+                               mails))
+         (sorted-mail-groups (sort mail-groups
+                                   mu4e-alert-grouped-mail-sorter))
+         (notifications (mapcar (lambda (group)
+                                  (funcall mu4e-alert-grouped-mail-notification-formatter
+                                           group
+                                           mails))
+                                sorted-mail-groups)))
     (dolist (notification (cl-subseq notifications 0 (min 5 (length notifications))))
       (alert (plist-get notification :body)
              :title (plist-get notification :title)
@@ -424,10 +463,11 @@ ALL-MAILS are the all the unread emails"
 (defun mu4e-alert-notify-unread-mail-async ()
   "Send a desktop notification about currently unread email."
   (mu4e-alert--get-mu-unread-mails (lambda (mails)
-                                     (when (memql 'count mu4e-alert-email-notification-types)
-                                       (mu4e-alert-notify-unread-messages-count (length mails)))
-                                     (when (memql 'subjects mu4e-alert-email-notification-types)
-                                       (mu4e-alert-notify-unread-messages mails)))))
+                                     (let ((new-mails (mu4e-alert-filter-repeated-mails mails)))
+                                       (when (memql 'count mu4e-alert-email-notification-types)
+                                         (mu4e-alert-notify-unread-messages-count (length new-mails)))
+                                       (when (memql 'subjects mu4e-alert-email-notification-types)
+                                         (mu4e-alert-notify-unread-messages new-mails))))))
 
 
 
