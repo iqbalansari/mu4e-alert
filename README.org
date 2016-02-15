@@ -172,8 +172,8 @@
 
 **** Customizing urgency hint
      By default ~mu4e-alert~ sets the urgency hint for current Emacs frame (or
-     the any mu4e frame if available), you disable it by setting the variable
-     ~mu4e-alert-set-window-urgency~ to nil.
+     the any mu4e frame if available), you can disable it by setting the
+     variable ~mu4e-alert-set-window-urgency~ to ~nil~.
 
 *** Customizing the mode-line display
     The mode-line indicator for unread emails can be customized by setting the
