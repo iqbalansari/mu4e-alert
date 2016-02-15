@@ -134,6 +134,17 @@ subjects - Notify with some content of the email, by default the emails are
 
 If non-nil `mu4e-alert' will set the WM_URGENT on detecting unread messages")
 
+(defcustom mu4e-alert-notify-repeated-mails nil
+  "Notify about interesting mails that were notified about earlier.
+
+By default `mu4e-alert' does not notify about mails it has notified about
+earlier.  For example, suppose you get two unread emails you read one and leave
+the other unread, next time the when mu4e-alert checks for unread emails, it
+will filter out the second message and show notifications only for mails that
+have arrived after the first check.  Set this option to a non-nil value if you
+wish to be notified of all emails at each check irrespective of whether you have
+been notified of the an email earlier or no.")
+
 ;;;###autoload
 (defun mu4e-alert-set-default-style (value)
   "Set the default style for unread email notifications.
@@ -336,9 +347,9 @@ This only removes the hints added by `mu4e-alert'"
 (defun mu4e-alert-filter-repeated-mails (mails)
   "Filters the MAILS that have been seen already."
   (cl-remove-if (lambda (mail)
-                  (prog1 (or mu4e-alert-notify-repeated-mails
-                             (ht-get mu4e-alert-repeated-mails
-                                     (plist-get mail :id)))
+                  (prog1 (and (not mu4e-alert-notify-repeated-mails)
+                              (ht-get mu4e-alert-repeated-mails
+                                      (plist-get mail :id)))
                     (ht-set! mu4e-alert-repeated-mails
                              (plist-get mail :id)
                              t)))
@@ -410,6 +421,19 @@ ALL-MAILS are the all the unread emails"
                                 (mapcar (lambda (mail)
                                           (plist-get mail :subject))
                                         mail-group))))))
+
+(defvar mu4e-alert-repeated-mails (ht-create #'equal))
+
+(defun mu4e-alert-filter-repeated-mails (mails)
+  "Filters the MAILS that have been seen already."
+  (cl-remove-if (lambda (mail)
+                  (prog1 (or mu4e-alert-notify-repeated-mails
+                             (ht-get mu4e-alert-repeated-mails
+                                     (plist-get mail :id)))
+                    (ht-set! mu4e-alert-repeated-mails
+                             (plist-get mail :id)
+                             t)))
+                mails))
 
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
