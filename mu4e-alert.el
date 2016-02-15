@@ -348,9 +348,9 @@ This only removes the hints added by `mu4e-alert'"
   (cl-remove-if (lambda (mail)
                   (prog1 (and (not mu4e-alert-notify-repeated-mails)
                               (ht-get mu4e-alert-repeated-mails
-                                      (plist-get mail :id)))
+                                      (plist-get mail :docid)))
                     (ht-set! mu4e-alert-repeated-mails
-                             (plist-get mail :id)
+                             (plist-get mail :docid)
                              t)))
                 mails))
 
@@ -420,19 +420,6 @@ ALL-MAILS are the all the unread emails"
                                 (mapcar (lambda (mail)
                                           (plist-get mail :subject))
                                         mail-group))))))
-
-(defvar mu4e-alert-repeated-mails (ht-create #'equal))
-
-(defun mu4e-alert-filter-repeated-mails (mails)
-  "Filters the MAILS that have been seen already."
-  (cl-remove-if (lambda (mail)
-                  (prog1 (or mu4e-alert-notify-repeated-mails
-                             (ht-get mu4e-alert-repeated-mails
-                                     (plist-get mail :id)))
-                    (ht-set! mu4e-alert-repeated-mails
-                             (plist-get mail :id)
-                             t)))
-                mails))
 
 (defun mu4e-alert-notify-unread-messages (mails)
   "Display desktop notification for given MAILS."
