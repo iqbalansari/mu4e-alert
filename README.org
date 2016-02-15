@@ -4,7 +4,7 @@
 
   [[https://raw.githubusercontent.com/iqbalansari/mu4e-alert/master/screenshots/mu4e-alert-in-action.png][screenshots/mu4e-alert-in-action.png?raw=true]]
 
-** Table of contents                                              :TOC_3_gh:
+** Table of contents                                              :TOC_4_gh:
  - [[#mu4e-alert][mu4e alert]]
    - [[#what-is-this][What is this?]]
    - [[#requirements][Requirements]]
@@ -17,10 +17,18 @@
    - [[#customizations][Customizations]]
      - [[#general-options][General options]]
      - [[#customizing-the-desktop-notifications][Customizing the desktop notifications]]
+       - [[#customizing-the-types-of-notifications-displayed][Customizing the types of notifications displayed]]
+       - [[#customizing-the-notifications-for-unread-emails-counts][Customizing the notifications for unread emails counts]]
+       - [[#customizing-the-notifications-for-unread-emails-subjects][Customizing the notifications for unread emails subjects]]
+       - [[#customizing-urgency-hint][Customizing urgency hint]]
      - [[#customizing-the-mode-line-display][Customizing the mode-line display]]
    - [[#getting-desktop-notifications][Getting desktop notifications]]
      - [[#linux][Linux]]
+       - [[#notifications][notifications]]
+       - [[#libnotify][libnotify]]
      - [[#mac-osx][Mac OSX]]
+       - [[#growl][growl]]
+       - [[#notifier][notifier]]
    - [[#advanced-customizations][Advanced customizations]]
 
 ** What is this?
