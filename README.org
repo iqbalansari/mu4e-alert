@@ -166,8 +166,6 @@
      | mu4e-alert-group-by                            | Field used to group emails (this is applicable only if mu4e-alert-mail-grouper is set to the default value) |
      | mu4e-alert-grouped-mail-sorter                 | Function used to sort the groups of unread emails                                                           |
      | mu4e-alert-grouped-mail-notification-formatter | Function used to get notification for group of unread emails                                                |
-     | mu4e-alert-notify-repeated-mails               | If set to non-nil, ~mu4e-alert~ displays notifications for all emails irrespective of whether user has been |
-     |                                                | notified about the email earlier. By default user is not notified about such repeated emails                |
      |------------------------------------------------+-------------------------------------------------------------------------------------------------------------|
 
 **** Customizing urgency hint
