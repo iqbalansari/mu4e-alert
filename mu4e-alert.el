@@ -1,6 +1,6 @@
 ;;; mu4e-alert.el --- Desktop notification for mu4e  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2015  Iqbal Ansari
+;; Copyright (C) 2015-2016  Iqbal Ansari
 
 ;; Author: Iqbal Ansari <iqbalansari02@yahoo.com>
 ;; URL: https://github.com/iqbalansari/mu4e-alert

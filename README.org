@@ -135,8 +135,8 @@
     ~mu4e-alert~ can display both the count as well subject of unread emails in
     the desktop notifications. Use the variable
     ~mu4e-alert-email-notification-types~ to customize the type of notifications
-    displayed. It is a list of notification types to be displayed. Following are
-    the notification types supported for now
+    displayed. It should be set to a list of types of notification you want to
+    receive. Following are the notification types supported for now
 
     - count    - Display the count of unread emails
     - subjects - Display the subject of unread emails
