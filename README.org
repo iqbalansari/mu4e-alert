@@ -141,6 +141,13 @@
     - count    - Display the count of unread emails
     - subjects - Display the subject of unread emails
 
+    For example, adding the following snippet to your init file, will instruct
+    ~mu4e-alert~ to only display the number of unread emails.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq mu4e-alert-email-notification-types '(count))
+    #+END_SRC
+
 **** Customizing the notifications for unread emails counts
      ~mu4e-alert~ allows you to customize the notifications for emails count by
      setting the following values
