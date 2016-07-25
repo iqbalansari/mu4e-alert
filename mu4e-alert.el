@@ -464,6 +464,13 @@ ALL-MAILS are the all the unread emails"
   "Advice `mu4e-mark-execute-all' to update mode-line after execution."
   (mu4e-alert-update-mail-count-modeline))
 
+(defadvice mu4e-context-switch (around mu4e-alert-update-mail-count-modeline disable)
+  "Advice `mu4e-context-switch' to update mode-line after changing the context."
+  (let ((context mu4e~context-current))
+    ad-do-it
+    (unless (equal context mu4e~context-current)
+      (mu4e-alert-update-mail-count-modeline))))
+
 ;;;###autoload
 (defun mu4e-alert-enable-mode-line-display ()
   "Enable display of unread emails in mode-line."
@@ -472,7 +479,9 @@ ALL-MAILS are the all the unread emails"
   (add-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
   (add-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
   (ad-enable-advice #'mu4e-mark-execute-all 'after 'mu4e-alert-update-mail-count-modeline)
+  (ad-enable-advice #'mu4e-context-switch 'around 'mu4e-alert-update-mail-count-modeline)
   (ad-activate #'mu4e-mark-execute-all)
+  (ad-activate #'mu4e-context-switch)
   (mu4e-alert-update-mail-count-modeline))
 
 (defun mu4e-alert-disable-mode-line-display ()
@@ -482,7 +491,9 @@ ALL-MAILS are the all the unread emails"
   (remove-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
   (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
   (ad-disable-advice #'mu4e-mark-execute-all 'after 'mu4e-alert-update-mail-count-modeline)
-  (ad-activate #'mu4e-mark-execute-all))
+  (ad-disable-advice #'mu4e-context-switch 'around 'mu4e-alert-update-mail-count-modeline)
+  (ad-deactivate #'mu4e-mark-execute-all)
+  (ad-deactivate #'mu4e-context-switch))
 
 ;;;###autoload
 (defun mu4e-alert-enable-notifications ()
