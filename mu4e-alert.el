@@ -195,7 +195,8 @@ The buffer holds the emails received from mu in sexp format"
   "Create sentinel for process to get mails from mu, CALLBACK is called with the unread mails."
   (lambda (process _)
     (when (memql (process-status process) '(exit signal))
-      (funcall callback (mu4e-alert--parse-mails (process-buffer process))))))
+      (funcall callback (mu4e-alert--parse-mails (process-buffer process)))
+      (kill-buffer (process-buffer process)))))
 
 (defun mu4e-alert--get-mail-output-buffer ()
   "Get buffer for storing mails received from mu."
