@@ -36,10 +36,10 @@
    additionally it can display the number of unread emails in the mode-line.
 
 ** Requirements
-   This package requires Emacs v24.1 or above. It assumes that you have a
-   working mu/mu4e setup. Additionally it requires `/bin/sh` which should be
-   available on any UNIXy system. Issues/Pull requests improving system
-   compatibility are welcome.
+   This package requires Emacs v24.1 or above and Mu version [[https://github.com/djcb/mu/releases/tag/v0.9.9.6][v0.9.9.6]] or
+   above. It assumes that you have a working mu/mu4e setup. Additionally it
+   requires `/bin/sh` which should be available on any UNIXy system. Issues/Pull
+   requests improving system compatibility are welcome.
 
 ** Installation
 *** ELPA
