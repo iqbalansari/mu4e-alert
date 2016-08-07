@@ -194,8 +194,14 @@ The buffer holds the emails received from mu in sexp format"
 (defun mu4e-alert--get-mail-sentinel (callback)
   "Create sentinel for process to get mails from mu, CALLBACK is called with the unread mails."
   (lambda (process _)
+    ;; If the process has completed successfully parse the mails
+    ;; and execute the callback
+    (when (and (equal (process-status process) 'exit)
+               (zerop (process-exit-status process)))
+      (funcall callback (mu4e-alert--parse-mails (process-buffer process))))
+
+    ;; Kill the buffer if the process has terminated
     (when (memql (process-status process) '(exit signal))
-      (funcall callback (mu4e-alert--parse-mails (process-buffer process)))
       (kill-buffer (process-buffer process)))))
 
 (defun mu4e-alert--get-mail-output-buffer ()
@@ -208,27 +214,22 @@ The buffer holds the emails received from mu in sexp format"
   "Get the count of interesting emails asynchronously.
 CALLBACK is called with one argument the interesting emails."
   (mu4e-alert--sanity-check)
-  (let* ((mail-count-command (append (mapcar #'shell-quote-argument
-                                             (append (list mu4e-mu-binary
-                                                           "find"
-                                                           "--nocolor"
-                                                           "-o"
-                                                           "sexp"
-                                                           "--sortfield=d"
-                                                           (format "--maxnum=%d" mu4e-alert-max-messages-to-process))
-                                                     (when mu4e-headers-skip-duplicates
-                                                       (list "-u"))
-                                                     (when mu4e-mu-home
-                                                       (list (concat "--muhome=" mu4e-mu-home)))
-                                                     (split-string mu4e-alert-interesting-mail-query)))
-                                     '("2>/dev/null")))
-         (mail-count-command-string (s-join " " mail-count-command)))
-    (set-process-sentinel (start-process "mu4e-unread-mails"
-                                         (mu4e-alert--get-mail-output-buffer)
-                                         (executable-find "sh")
-                                         "-c"
-                                         mail-count-command-string)
-                          (mu4e-alert--get-mail-sentinel callback))))
+  (set-process-sentinel (apply #'start-process
+                               "mu4e-unread-mails"
+                               (mu4e-alert--get-mail-output-buffer)
+                               mu4e-mu-binary
+                               (append (list "find"
+                                             "--nocolor"
+                                             "-o"
+                                             "sexp"
+                                             "--sortfield=d"
+                                             (format "--maxnum=%d" mu4e-alert-max-messages-to-process))
+                                       (when mu4e-headers-skip-duplicates
+                                         (list "-u"))
+                                       (when mu4e-mu-home
+                                         (list (concat "--muhome=" mu4e-mu-home)))
+                                       (split-string mu4e-alert-interesting-mail-query)))
+                        (mu4e-alert--get-mail-sentinel callback)))
 
 
 
