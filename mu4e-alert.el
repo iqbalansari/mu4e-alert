@@ -196,9 +196,11 @@ The buffer holds the emails received from mu in sexp format"
   (lambda (process _)
     ;; If the process has completed successfully parse the mails
     ;; and execute the callback
-    (when (and (equal (process-status process) 'exit)
-               (zerop (process-exit-status process)))
-      (funcall callback (mu4e-alert--parse-mails (process-buffer process))))
+    (when (equal (process-status process) 'exit)
+      (cond ((zerop (process-exit-status process))
+             (funcall callback (mu4e-alert--parse-mails (process-buffer process))))
+            ((= (process-exit-status process) 4)
+             (funcall callback nil))))
 
     ;; Kill the buffer if the process has terminated
     (when (memql (process-status process) '(exit signal))
