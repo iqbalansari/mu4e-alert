@@ -1,6 +1,6 @@
 * mu4e alert
 
-  [[http://melpa.org/#/mu4e-alert][file:http://melpa.org/packages/mu4e-alert-badge.svg]] [[http://stable.melpa.org/#/mu4e-alert][file:http://stable.melpa.org/packages/mu4e-alert-badge.svg]]
+  [[http://melpa.org/#/mu4e-alert][file:http://melpa.org/packages/mu4e-alert-badge.svg]] [[http://stable.melpa.org/#/mu4e-alert][file:http://stable.melpa.org/packages/mu4e-alert-badge.svg]] [[http://www.gnu.org/licenses/gpl-3.0.html][http://img.shields.io/:license-gpl3-blue.svg]] [[http://makeapullrequest.com][file:https://img.shields.io/badge/PRs-welcome-brightgreen.svg]]
 
   [[https://raw.githubusercontent.com/iqbalansari/mu4e-alert/master/screenshots/mu4e-alert-in-action.png][screenshots/mu4e-alert-in-action.png?raw=true]]
 
