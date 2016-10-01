@@ -9,12 +9,12 @@
    See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.3...v0.4][Changes]]
 
 *** Changed
-    - mu binary is now called directly, removing dependency on user shell and command line tools mu4e-alert can now work on any OS, mu runs on (this has not been tested yet)
+    - ~mu~ binary is now called directly, removing dependency on user shell and command line tools mu4e-alert can now work on any OS, mu runs on (this has not been tested yet)
 
 *** Added
-    - mu4e-headers-skip-duplicates option is now respected
-    - mu4e-alert can now display for the count as well as subject of unread emails in notifications This can be customized, see the README for more details.
-    - Window urgency is set on arrival of unread messages See the README for more details.
+    - ~mu4e-headers-skip-duplicates~ option is now respected
+    - ~mu4e-alert~ can now display for the count as well as subject of unread emails in notifications This can be customized
+    - Window urgency is set on arrival of unread messages
 
 ** v0.3 - 2015-12-21
    See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.2...v0.3][Changes]]
