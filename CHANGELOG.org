@@ -1,0 +1,29 @@
+* Change Log
+  All notable changes to this project will be documented in this file.
+  The format is based on [[http://keepachangelog.com/][Keep a Changelog]].
+
+** Unreleased
+   See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.4...HEAD][Changes]]
+
+** v0.4 - 2016-09-28
+   See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.3...v0.4][Changes]]
+
+*** Changed
+    - mu binary is now called directly, removing dependency on user shell and command line tools mu4e-alert can now work on any OS, mu runs on (this has not been tested yet)
+
+*** Added
+    - mu4e-headers-skip-duplicates option is now respected
+    - mu4e-alert can now display for the count as well as subject of unread emails in notifications This can be customized, see the README for more details.
+    - Window urgency is set on arrival of unread messages See the README for more details.
+
+** v0.3 - 2015-12-21
+   See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.2...v0.3][Changes]]
+
+*** Fixed
+    - Display the message according to ~mu4e-alert-interesting-mail-query~ on clicking on modeline
+
+*** Changed
+    - Use mu4e-mu-home if set
+
+** v0.2 - 2015-09-15
+   Initial public release
