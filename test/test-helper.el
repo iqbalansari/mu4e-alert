@@ -19,5 +19,4 @@
 
     (add-to-list 'load-path project-dir)))
 
-(provide 'test-helper)
 ;;; test-helper.el ends here
