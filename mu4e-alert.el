@@ -208,7 +208,7 @@ The buffer holds the emails received from mu in sexp format"
 
 (defun mu4e-alert--get-mail-output-buffer ()
   "Get buffer for storing mails received from mu."
-  (with-current-buffer (get-buffer-create " *mu4e-mails*")
+  (with-current-buffer (get-buffer-create " *mu4e-alert-mails*")
     (rename-uniquely)
     (current-buffer)))
 
@@ -217,7 +217,7 @@ The buffer holds the emails received from mu in sexp format"
 CALLBACK is called with one argument the interesting emails."
   (mu4e-alert--sanity-check)
   (set-process-sentinel (apply #'start-process
-                               "mu4e-unread-mails"
+                               "mu4e-alert-unread-mails"
                                (mu4e-alert--get-mail-output-buffer)
                                mu4e-mu-binary
                                (append (list "find"
