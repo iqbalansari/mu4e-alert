@@ -177,6 +177,9 @@ See also https://github.com/jwiegley/alert."
 
 ;; Core functions
 
+(defvar mu4e-alert-log-buffer " *mu4e-alert-logs*"
+  "Buffer where mu4e-alert's internal logs are stored.")
+
 (defun mu4e-alert--sanity-check ()
   "Sanity check run before attempting to fetch unread emails."
   (unless (and (bound-and-true-p mu4e-mu-binary)
@@ -212,10 +215,11 @@ The buffer holds the emails received from mu in sexp format"
     (rename-uniquely)
     (current-buffer)))
 
-(defun mu4e-alert--get-mu-unread-mails (callback)
-  "Get the count of interesting emails asynchronously.
-CALLBACK is called with one argument the interesting emails."
-  (mu4e-alert--sanity-check)
+(defun mu4e-alert--get-mu-unread-emails-1 (callback)
+  "Invoke a mu to get interesting emails and call CALLBACK with the results.
+
+This is used internally by `mu4e-alert--get-mu-unread-emails' which throttles
+the requests for unread emails."
   (set-process-sentinel (apply #'start-process
                                "mu4e-alert-unread-mails"
                                (mu4e-alert--get-mail-output-buffer)
@@ -232,6 +236,39 @@ CALLBACK is called with one argument the interesting emails."
                                          (list (concat "--muhome=" mu4e-mu-home)))
                                        (split-string mu4e-alert-interesting-mail-query)))
                         (mu4e-alert--get-mail-sentinel callback)))
+
+(defvar mu4e-alert--fetch-timer nil
+  "The scheduled fetching of mails from mu.")
+
+(defvar mu4e-alert--callback-queue nil
+  "Callbacks queued for running after fetching mails from mu.")
+
+(defun mu4e-alert--email-processor (mails)
+  "Process the MAILS fetched from mu.
+
+This simply runs queued callbacks one by one, any errors occurring while running
+are logged in the `mu4e-alert-log-buffer'"
+  (let ((callback-queue mu4e-alert--callback-queue))
+    (setq mu4e-alert--callback-queue nil)
+    (dolist (callback callback-queue)
+      (condition-case err
+          (funcall callback mails)
+        (error (with-current-buffer (get-buffer-create mu4e-alert-log-buffer)
+                 (insert "Failed to execute a queued callback because: %s"
+                         (error-message-string err))))))))
+
+(defun mu4e-alert--get-mu-unread-mails (callback)
+  "Get the count of interesting emails asynchronously.
+CALLBACK is called with one argument the interesting emails."
+  (mu4e-alert--sanity-check)
+  (when (and (timerp mu4e-alert--fetch-timer)
+             (not (timer--triggered mu4e-alert--fetch-timer)))
+    (cancel-timer mu4e-alert--fetch-timer))
+  (push callback mu4e-alert--callback-queue)
+  (setq mu4e-alert--fetch-timer
+        (run-at-time 0.5 nil
+                     #'mu4e-alert--get-mu-unread-emails-internal
+                     #'mu4e-alert--email-processor)))
 
 
 
