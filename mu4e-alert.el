@@ -37,6 +37,7 @@
 (require 's)
 (require 'ht)
 
+(require 'timer)
 (require 'time)
 (require 'advice)
 (require 'pcase)
