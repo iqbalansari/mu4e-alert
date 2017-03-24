@@ -267,7 +267,7 @@ CALLBACK is called with one argument the interesting emails."
   (push callback mu4e-alert--callback-queue)
   (setq mu4e-alert--fetch-timer
         (run-at-time 0.5 nil
-                     #'mu4e-alert--get-mu-unread-emails-internal
+                     #'mu4e-alert--get-mu-unread-emails-1
                      #'mu4e-alert--email-processor)))
 
 
