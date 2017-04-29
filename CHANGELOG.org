@@ -3,13 +3,20 @@
   The format is based on [[http://keepachangelog.com/][Keep a Changelog]].
 
 ** Unreleased
-   See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.4...HEAD][Changes]]
+   See [[https://github.com/iqbalansari/mu4e-alert/compare/v1.0...HEAD][Changes]]
+
+** v1.0 - 2017-04-29
+   See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.4...v1.0][Changes]]
+
+*** Changed
+    - Fetching of emails from ~mu~ are now throttled, as result multiple requests of unread emails are now batched into one
+    - ~mu4e-alert~ now hooks into ~mu4e-msg-changed-hook~ instead of advicing ~mu4e-mark-execute-all~ to trigger fetching of mail counts
 
 ** v0.4 - 2016-09-28
    See [[https://github.com/iqbalansari/mu4e-alert/compare/v0.3...v0.4][Changes]]
 
 *** Changed
-    - ~mu~ binary is now called directly, removing dependency on user shell and command line tools mu4e-alert can now work on any OS, mu runs on (this has not been tested yet)
+    - ~mu~ binary is now called directly, removing dependency on user shell and command line tools mu4e-alert can now work on any OS mu runs on (this has not been tested yet)
 
 *** Added
     - ~mu4e-headers-skip-duplicates~ option is now respected
