@@ -221,7 +221,7 @@ The buffer holds the emails received from mu in sexp format"
 
 This is used internally by `mu4e-alert--get-mu-unread-emails' which throttles
 the requests for unread emails."
-  (let ((default user-emacs-directory))
+  (let ((default-directory (expand-file-name "~")))
     (set-process-sentinel (apply #'start-process
                                  "mu4e-alert-unread-mails"
                                  (mu4e-alert--get-mail-output-buffer)
