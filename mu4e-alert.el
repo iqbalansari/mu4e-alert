@@ -231,6 +231,7 @@ the requests for unread emails."
                                                "-o"
                                                "sexp"
                                                "--sortfield=d"
+                                               "-z"
                                                (format "--maxnum=%d" mu4e-alert-max-messages-to-process))
                                          (when mu4e-headers-skip-duplicates
                                            (list "-u"))
