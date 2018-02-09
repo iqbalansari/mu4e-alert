@@ -371,7 +371,7 @@ This only removes the hints added by `mu4e-alert'"
                            (when (and buffer
                                       (get-buffer-window buffer t))
                              (window-frame (get-buffer-window buffer t))))
-                         (list mu4e~headers-buffer mu4e~view-buffer mu4e~main-buffer-name)))))
+                         (list mu4e~main-buffer-name)))))
 
 (defun mu4e-alert--setup-clear-urgency ()
   "Setup hooks to clear the urgency hooks."
