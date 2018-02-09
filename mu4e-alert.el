@@ -106,11 +106,13 @@ messages should grouped together in one notification."
   "The function used to get arrange similar mails in to a group.
 
 It should accept a list of mails and return a list of lists, where each list is
-a group of messages that user should be notified about in one notification.")
+a group of messages that user should be notified about in one notification."
+  :type 'function)
 
 (defcustom mu4e-alert-grouped-mail-sorter
   #'mu4e-alert-default-grouped-mail-sorter
-  "The function used to sort the emails after grouping them.")
+  "The function used to sort the emails after grouping them."
+  :type 'function)
 
 (defcustom mu4e-alert-grouped-mail-notification-formatter
   #'mu4e-alert-default-grouped-mail-notification-formatter
@@ -118,7 +120,8 @@ a group of messages that user should be notified about in one notification.")
 
 The function is used get the notification to be displayed for a group of emails.
 It should return a plist with keys :title and :body with the value of title and
-body for the notification respectively.")
+body for the notification respectively."
+  :type 'function)
 
 (defcustom mu4e-alert-email-notification-types '(count subjects)
   "The types of notifications to be displayed for emails.
@@ -128,12 +131,14 @@ have following elements
 count    - Notify the total email count to the user
 subjects - Notify with some content of the email, by default the emails are
            grouped by the sender.  And one notification is issued per sender
-           with the subject of the emails is displayed in the notification.")
+           with the subject of the emails is displayed in the notification."
+  :type 'symbol)
 
 (defcustom mu4e-alert-set-window-urgency t
   "Set window urgency on recieving unread emails.
 
-If non-nil `mu4e-alert' will set the WM_URGENT on detecting unread messages")
+If non-nil `mu4e-alert' will set the WM_URGENT on detecting unread messages"
+  :type 'boolean)
 
 (defcustom mu4e-alert-notify-repeated-mails nil
   "Notify about interesting mails that were notified about earlier.
@@ -144,7 +149,8 @@ the other unread, next time the when mu4e-alert checks for unread emails, it
 will filter out the second message and show notifications only for mails that
 have arrived after the first check.  Set this option to a non-nil value if you
 wish to be notified of all emails at each check irrespective of whether you have
-been notified of the an email earlier or no.")
+been notified of the an email earlier or no."
+  :type 'boolean)
 
 ;;;###autoload
 (defun mu4e-alert-set-default-style (value)
