@@ -6,7 +6,7 @@
 ;; URL: https://github.com/iqbalansari/mu4e-alert
 ;; Keywords: mail, convenience
 ;; Version: 1.0
-;; Package-Requires: ((alert "1.2") (s "1.10.0") (ht "2.0") (emacs "24.1"))
+;; Package-Requires: ((alert "1.2") (s "1.10.0") (ht "2.0") (emacs "24.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
