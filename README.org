@@ -36,7 +36,7 @@
    additionally it can display the number of unread emails in the mode-line.
 
 ** Requirements
-   This package requires Emacs v24.1 or above and Mu version [[https://github.com/djcb/mu/releases/tag/v0.9.9.6][v0.9.9.6]] or
+   This package requires Emacs v24.3 or above and Mu version [[https://github.com/djcb/mu/releases/tag/v0.9.9.6][v0.9.9.6]] or
    above. It assumes that you have a working mu/mu4e setup.
 
 ** Installation
