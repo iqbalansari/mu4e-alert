@@ -524,7 +524,10 @@ ALL-MAILS are the all the unread emails"
   (add-to-list 'global-mode-string '(:eval mu4e-alert-mode-line) t)
   (add-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
   (add-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
-  (add-hook 'mu4e-msg-changed-hook #'mu4e-alert-update-mail-count-modeline)
+  (add-hook (if (boundp 'mu4e-message-changed-hook)
+                   'mu4e-message-changed-hook
+                 'mu4e-msg-changed-hook)
+            #'mu4e-alert-update-mail-count-modeline)
   (ad-enable-advice #'mu4e-context-switch 'around 'mu4e-alert-update-mail-count-modeline)
   (ad-activate #'mu4e-context-switch)
   (mu4e-alert-update-mail-count-modeline))
@@ -535,7 +538,10 @@ ALL-MAILS are the all the unread emails"
   (setq global-mode-string (delete '(:eval mu4e-alert-mode-line) global-mode-string))
   (remove-hook 'mu4e-view-mode-hook #'mu4e-alert-update-mail-count-modeline)
   (remove-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
-  (remove-hook 'mu4e-msg-changed-hook #'mu4e-alert-update-mail-count-modeline)
+  (remove-hook (if (boundp 'mu4e-message-changed-hook)
+                   'mu4e-message-changed-hook
+                 'mu4e-msg-changed-hook)
+               #'mu4e-alert-update-mail-count-modeline)
   (ad-disable-advice #'mu4e-context-switch 'around 'mu4e-alert-update-mail-count-modeline)
   (ad-deactivate #'mu4e-context-switch))
 
