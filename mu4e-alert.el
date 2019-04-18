@@ -152,6 +152,13 @@ wish to be notified of all emails at each check irrespective of whether you have
 been notified of the an email earlier or no."
   :type 'boolean)
 
+(defcustom mu4e-alert-icon nil
+  "Full path to icon to show in notification.
+
+Note that not all 'alert' notification backends support this."
+  :type 'string
+  :group 'mu4e-alert)
+
 ;;;###autoload
 (defun mu4e-alert-set-default-style (value)
   "Set the default style for unread email notifications.
@@ -485,7 +492,8 @@ ALL-MAILS are the all the unread emails"
     (dolist (notification (cl-subseq notifications 0 (min 5 (length notifications))))
       (alert (plist-get notification :body)
              :title (plist-get notification :title)
-             :category "mu4e-alert"))
+             :category "mu4e-alert"
+             :icon mu4e-alert-icon))
     (when notifications
       (mu4e-alert-set-window-urgency-maybe))))
 
@@ -495,7 +503,8 @@ ALL-MAILS are the all the unread emails"
     (alert (funcall mu4e-alert-email-count-notification-formatter
                     mail-count)
            :title mu4e-alert-email-count-title
-           :category "mu4e-alert")))
+           :category "mu4e-alert"
+           :icon mu4e-alert-icon)))
 
 (defun mu4e-alert-notify-unread-mail-async ()
   "Send a desktop notification about currently unread email."
