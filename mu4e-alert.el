@@ -315,9 +315,7 @@ MAIL-COUNT is the count of mails for which the string is to displayed"
                                  (mouse-1 . mu4e-alert-view-unread-mails)
                                  (mouse-2 . mu4e-alert-view-unread-mails)
                                  (mouse-3 . mu4e-alert-view-unread-mails)))
-            (if (zerop mail-count)
-                " "
-              (format " [%d] " mail-count)))))
+            (format " [%d] " mail-count))))
 
 (defun mu4e-alert-view-unread-mails ()
   "View unread mails.
