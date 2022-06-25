@@ -292,10 +292,13 @@ CALLBACK is called with one argument the interesting emails."
 
 (defvar mu4e-alert-mode-line nil "The mode-line indicator to display the count of unread emails.")
 
+(defvar mu4e-alert-default-mode-line-always-display nil "Should the default mode-line indicator always be displayed, even if there are zero unread emails?")
+
 (defun mu4e-alert-default-mode-line-formatter (mail-count)
   "Default formatter used to get the string to be displayed in the mode-line.
 MAIL-COUNT is the count of mails for which the string is to displayed"
-  (when (not (zerop mail-count))
+  (when (or (not (zerop mail-count))
+            mu4e-alert-default-mode-line-always-display)
     (concat " "
             (propertize
              "Mail"
