@@ -521,9 +521,9 @@ ALL-MAILS are the all the unread emails"
 
 (defadvice mu4e-context-switch (around mu4e-alert-update-mail-count-modeline disable)
   "Advice `mu4e-context-switch' to update mode-line after changing the context."
-  (let ((context mu4e~context-current))
+  (let ((context mu4e--context-current))
     ad-do-it
-    (unless (equal context mu4e~context-current)
+    (unless (equal context mu4e--context-current)
       (mu4e-alert-update-mail-count-modeline))))
 
 ;;;###autoload
